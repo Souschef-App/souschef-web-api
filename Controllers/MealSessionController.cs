@@ -52,22 +52,59 @@ public IActionResult GetFavoriteRecipes()
     }
 
 [HttpGet("mealplans")]
-    public IActionResult GetMealPlans()
+    public async Task<ActionResult<IEnumerable<MealPlanDto>>> GetMealPlans()
     {
-        var mealPlans = _mealPlanRepository.GetAllMealPlans();
-        return Ok(mealPlans);
+        var mealPlans = await _context.MealPlans.ToListAsync();
+        var mealPlanDtos = mealPlans.Select(mp => new MealPlanDto
+        {
+            Id = mp.Id,
+            Name = mp.Name,
+            Date = mp.Date,
+            Meals = mp.Meals.Select(m => new MealDto
+            {
+                Id = m.Id,
+                Name = m.Name,
+                // Map other meal properties as needed
+            }).ToList(),
+            // Map other properties as needed
+        });
+
+        return Ok(mealPlanDtos);
     }
 
-[HttpPost("mealplans")]
-    public IActionResult CreateMealPlan([FromBody] MealPlan mealPlan)
+    [HttpPost("mealplans")]
+    public async Task<ActionResult<MealPlanDto>> CreateMealPlan(MealPlanDto mealPlanDto)
     {
-        if (mealPlan == null)
+        var mealPlan = new MealPlan
         {
-            return BadRequest("Invalid data");
-        }
+            Name = mealPlanDto.Name,
+            Date = mealPlanDto.Date,
+            Meals = mealPlanDto.Meals.Select(mealDto => new Meal
+            {
+                Name = mealDto.Name,
+                // Map other meal properties as needed
+            }).ToList(),
+            // Map other properties as needed
+        };
 
-        _mealPlanRepository.AddMealPlan(mealPlan);
-        return CreatedAtAction(nameof(GetMealPlans), new { id = mealPlan.Id }, mealPlan);
+        _context.MealPlans.Add(mealPlan);
+        await _context.SaveChangesAsync();
+
+        var savedMealPlanDto = new MealPlanDto
+        {
+            Id = mealPlan.Id,
+            Name = mealPlan.Name,
+            Date = mealPlan.Date,
+            Meals = mealPlan.Meals.Select(meal => new MealDto
+            {
+                Id = meal.Id,
+                Name = meal.Name,
+                // will create meal properties if needed
+            }).ToList(),
+            // will create other properties if needed
+        };
+
+        return CreatedAtAction(nameof(GetMealPlans), savedMealPlanDto);
     }
 
 [HttpPost("mealplans/{mealPlanId}/addrecipe")]
@@ -104,5 +141,73 @@ public IActionResult SetSessionDateTime(int sessionId, [FromBody] DateTime sessi
     _sessionRepository.UpdateSession(session);
 
     return Ok(session);
+}
+[HttpDelete("sessions/{id}")]
+public async Task<IActionResult> DeleteSession(int id)
+{
+    var session = await _context.Sessions.FindAsync(id);
+
+    if (session == null)
+    {
+        return NotFound();
+    }
+
+    _context.Sessions.Remove(session);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+[HttpPut("sessions/{id}")]
+public async Task<IActionResult> UpdateSession(int id, UpdateSessionDto updateSessionDto)
+{
+    var existingSession = await _context.Sessions.FindAsync(id);
+
+    if (existingSession == null)
+    {
+        return NotFound();
+    }
+
+    // Update properties of the existing session based on sessionDto
+    existingSession.Name = sessionDto.Name;
+    existingSession.StartTime = sessionDto.StartTime;
+    // Update other properties as needed
+
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+[HttpPut("mealplans/{id}")]
+public async Task<IActionResult> UpdateMealPlan(int id, UpdateMealPlanDto updateMealPlanDto)
+{
+    var existingMealPlan = await _context.MealPlans.FindAsync(id);
+
+    if (existingMealPlan == null)
+    {
+        return NotFound();
+    }
+
+    // Update properties of the existing meal plan based on updateMealPlanDto
+    existingMealPlan.Name = updateMealPlanDto.Name;
+    existingMealPlan.Date = updateMealPlanDto.Date;
+    // Update meals as needed (e.g., map updateMealPlanDto properties to existingMealPlan.Meals)
+
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+[HttpDelete("mealplans/{id}")]
+public async Task<IActionResult> DeleteMealPlan(int id)
+{
+    var mealPlan = await _context.MealPlans.FindAsync(id);
+
+    if (mealPlan == null)
+    {
+        return NotFound();
+    }
+
+    _context.MealPlans.Remove(mealPlan);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
 }
 }
