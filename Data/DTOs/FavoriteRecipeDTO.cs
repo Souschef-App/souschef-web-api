@@ -1,4 +1,3 @@
-// DTOs/FavoriteRecipeDto.cs
 public class FavoriteRecipeDto
 {
     public int Id { get; set; }

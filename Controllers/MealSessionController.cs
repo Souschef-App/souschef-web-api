@@ -5,7 +5,7 @@ using souschef.server.Data.Repository.Contracts;
 using System;
 using System.Collections.Generic;
 
-[Route("api/[controller]")]
+[Route("api/[mealsession]")]
 [ApiController]
 public class MealSessionController : ControllerBase
 {
@@ -36,7 +36,6 @@ public class MealSessionController : ControllerBase
             UserId = fr.UserId,
             RecipeId = fr.RecipeId,
             DateAdded = fr.DateAdded,
-            // Map other properties as needed
         });
 
         return Ok(favoriteRecipeDtos);
@@ -51,7 +50,6 @@ public class MealSessionController : ControllerBase
             UserId = favoriteRecipeDto.UserId,
             RecipeId = favoriteRecipeDto.RecipeId,
             DateAdded = DateTime.UtcNow,
-            // Map other properties as needed
         };
 
         await _favoriteRepository.AddFavoriteRecipeAsync(favoriteRecipe);
@@ -62,7 +60,6 @@ public class MealSessionController : ControllerBase
             UserId = favoriteRecipe.UserId,
             RecipeId = favoriteRecipe.RecipeId,
             DateAdded = favoriteRecipe.DateAdded,
-            // Map other properties as needed
         };
 
         return CreatedAtAction(nameof(GetFavoriteRecipes), savedFavoriteRecipeDto);
@@ -77,11 +74,8 @@ public class MealSessionController : ControllerBase
         {
             return NotFound();
         }
-
-        // Update properties of the existing favorite recipe based on updatedFavoriteRecipeDto
         existingFavoriteRecipe.UserId = updatedFavoriteRecipeDto.UserId;
         existingFavoriteRecipe.RecipeId = updatedFavoriteRecipeDto.RecipeId;
-        // Update other properties as needed
 
         await _favoriteRepository.UpdateFavoriteRecipeAsync(id, existingFavoriteRecipe);
 
@@ -103,7 +97,6 @@ public class MealSessionController : ControllerBase
         return NoContent();
     }
 
-    // Endpoint for managing meal plans
     [HttpGet("mealplans")]
     public async Task<ActionResult<IEnumerable<MealPlanD>>> GetMealPlans()
     {
@@ -117,9 +110,7 @@ public class MealSessionController : ControllerBase
             {
                 Id = m.Id,
                 Name = m.Name,
-                // Map other meal properties as needed
             }).ToList(),
-            // Map other properties as needed
         });
 
         return Ok(mealPlanDtos);
@@ -135,9 +126,7 @@ public class MealSessionController : ControllerBase
             Meals = mealPlanDto.Meals.Select(mealDto => new Meal
             {
                 Name = mealDto.Name,
-                // Map other meal properties as needed
             }).ToList(),
-            // Map other properties as needed
         };
 
         await _mealPlanRepository.AddMealPlanAsync(mealPlan);
@@ -151,9 +140,7 @@ public class MealSessionController : ControllerBase
             {
                 Id = meal.Id,
                 Name = meal.Name,
-                // Map other meal properties as needed
             }).ToList(),
-            // Map other properties as needed
             
         };
 }
@@ -167,7 +154,6 @@ public class MealSessionController : ControllerBase
             Id = s.Id,
             Name = s.Name,
             StartTime = s.StartTime,
-            // Map other properties as needed
         });
 
         return Ok(sessionDtos);
@@ -179,7 +165,6 @@ public class MealSessionController : ControllerBase
         {
             Name = sessionDto.Name,
             StartTime = sessionDto.StartTime,
-            // Map other properties as needed
         };
 
         await _sessionRepository.AddSessionAsync(session);
@@ -189,7 +174,6 @@ public class MealSessionController : ControllerBase
             Id = session.Id,
             Name = session.Name,
             StartTime = session.StartTime,
-            // Map other properties as needed
         };
 
         return CreatedAtAction(nameof(GetSessions), savedSessionDto);
@@ -205,10 +189,8 @@ public class MealSessionController : ControllerBase
             return NotFound();
         }
 
-        // Update properties of the existing session based on updatedSessionDto
         existingSession.Name = updatedSessionDto.Name;
         existingSession.StartTime = updatedSessionDto.StartTime;
-        // Update other properties as needed
 
         await _sessionRepository.UpdateSessionAsync(id, existingSession);
 
