@@ -4,6 +4,7 @@ using souschef.server.Data.Models;
 using souschef.server.Data.Repository;
 using souschef.server.Data.Repository.Contracts;
 using souschef.server.Helpers;
+using souschef.server.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
 
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<ICookingSessionRepository, CookingSessionRepository>();
+
+builder.Services.AddSingleton<ISubTaskGenerationService, SubTaskGenerationService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
