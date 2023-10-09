@@ -23,12 +23,12 @@ namespace souschef.server.Controllers
 
 
         [HttpPost("subtask")]
-        public ActionResult<IEnumerable<Recipe>> RequestSubTaskGeneration()
+        public async Task<ActionResult<IEnumerable<Recipe>>> RequestSubTaskGeneration()
         {
-            var subtask = m_SubTaskGenerationService.RequestSubTaskGeneration("my-id", "fry the banannas");
+            var subtask = await m_SubTaskGenerationService.RequestSubTaskGeneration("my-id", "fry the sausages");
             if (subtask != null)
             {
-                return Ok("hey");
+                return Ok(subtask);
             }
             else
             {
