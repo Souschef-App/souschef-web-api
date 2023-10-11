@@ -1,65 +1,46 @@
+// Repositories/MealPlanRepository.cs
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using YourNamespace.Models;
 
-public class MealPlanRepository : IMealPlanRepository
+public class MealPlanRepository
 {
-    private readonly AppDbContext _context;
+    private readonly List<MealPlan> _mealPlans = new List<MealPlan>();
+    private int _nextId = 1;
 
-    public MealPlanRepository(AppDbContext context)
+    public MealPlan Create(MealPlan mealPlan)
     {
-        _context = context;
+        mealPlan.Id = _nextId++;
+        _mealPlans.Add(mealPlan);
+        return mealPlan;
     }
 
-    public async Task<MealPlan> GetMealPlanAsync(int mealPlanId)
+    public MealPlan? Get(int id)
     {
-        return await _context.MealPlans
-            .Include(mp => mp.Meals) // Include related meals
-            .FirstOrDefaultAsync(mp => mp.Id == mealPlanId);
+        return _mealPlans.FirstOrDefault(mp => mp.Id == id);
     }
 
-    public async Task<IEnumerable<MealPlan>> GetAllMealPlansAsync()
+    public IEnumerable<MealPlan> GetAll()
     {
-        return await _context.MealPlans
-            .Include(mp => mp.Meals) // Include related meals
-            .ToListAsync();
+        return _mealPlans;
     }
 
-    public async Task AddMealPlanAsync(MealPlan mealPlan)
+    public void Update(MealPlan mealPlan)
     {
-        _context.MealPlans.Add(mealPlan);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateMealPlanAsync(int mealPlanId, MealPlan updatedMealPlan)
-    {
-        var existingMealPlan = await _context.MealPlans.FindAsync(mealPlanId);
+        var existingMealPlan = Get(mealPlan.Id);
         if (existingMealPlan != null)
         {
-            // Update properties of the existing meal plan based on updatedMealPlan
-            existingMealPlan.Name = updatedMealPlan.Name;
-            existingMealPlan.Date = updatedMealPlan.Date;
-
-            // Update meals as needed
-            existingMealPlan.Meals.Clear(); // Clear existing meals
-            existingMealPlan.Meals.AddRange(updatedMealPlan.Meals); // Add updated meals
-
-            // Update other properties as needed
-            await _context.SaveChangesAsync();
+            existingMealPlan.Date = mealPlan.Date;
         }
     }
 
-    public async Task DeleteMealPlanAsync(int mealPlanId)
+    public void Delete(int id)
     {
-        var mealPlan = await _context.MealPlans.FindAsync(mealPlanId);
+        var mealPlan = Get(id);
         if (mealPlan != null)
         {
-            _context.MealPlans.Remove(mealPlan);
-            await _context.SaveChangesAsync();
+            _mealPlans.Remove(mealPlan);
         }
     }
-
-    // Implement other methods as needed
 }
