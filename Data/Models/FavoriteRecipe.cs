@@ -1,8 +1,11 @@
 using souschef.server.Data;
 
-public class FavoriteRecipe{
+// Models/FavoriteRecipe.cs
 
-    public int Id {get; set;}
-    public string recipeName {get; set;}
-    public bool IsFavorite {get; set;} // New property for indicating if it's a favorite
+public class FavoriteRecipe
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public string? Description { get; set; }
+    public bool IsFavorite { get; set; } // New property for indicating if it's a favorite
 }
