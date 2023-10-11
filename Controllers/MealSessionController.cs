@@ -1,214 +1,88 @@
 using Microsoft.AspNetCore.Mvc;
-using RecipeAPI.Models;
-using RecipeAPI.Repositories;
-using souschef.server.Data.Repository.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-[Route("api/[mealsession]")]
+[Route("api/sessions")]
 [ApiController]
-public class MealSessionController : ControllerBase
+public class SessionController : ControllerBase
 {
-    private readonly IFavoriteRepository _favoriteRepository;
-    private readonly ISessionRepository _sessionRepository;
-    private readonly IMealPlanRepository _mealPlanRepository;
+    private readonly SessionRepository _repository;
 
-     public MealSessionController(
-        IFavoriteRepository favoriteRepository,
-        ISessionRepository sessionRepository,
-        IMealPlanRepository mealPlanRepository)
+    public SessionController(SessionRepository repository)
     {
-        _favoriteRepository = favoriteRepository;
-        _sessionRepository = sessionRepository;
-        _mealPlanRepository = mealPlanRepository;
+        _repository = repository;
     }
 
-    //API endpoints
-
-// Endpoint for managing favorite recipes
-    [HttpGet("favoriterecipes")]
-    public async Task<ActionResult<IEnumerable<FavoriteRecipeDto>>> GetFavoriteRecipes()
+    [HttpGet]
+    public ActionResult<IEnumerable<MealSessionDto>> GetSessions()
     {
-        var favoriteRecipes = await _favoriteRepository.GetAllFavoriteRecipesAsync();
-        var favoriteRecipeDtos = favoriteRecipes.Select(fr => new FavoriteRecipeDto
+        var sessions = _repository.GetAll();
+        var sessionDtos = sessions.Select(session => new MealSessionDto
         {
-            Id = fr.Id,
-            UserId = fr.UserId,
-            RecipeId = fr.RecipeId,
-            DateAdded = fr.DateAdded,
-        });
-
-        return Ok(favoriteRecipeDtos);
-    }
-
-
- [HttpPost("favoriterecipes")]
-    public async Task<ActionResult<FavoriteRecipeDto>> AddFavoriteRecipe(FavoriteRecipeDto favoriteRecipeDto)
-    {
-        var favoriteRecipe = new FavoriteRecipe
-        {
-            UserId = favoriteRecipeDto.UserId,
-            RecipeId = favoriteRecipeDto.RecipeId,
-            DateAdded = DateTime.UtcNow,
-        };
-
-        await _favoriteRepository.AddFavoriteRecipeAsync(favoriteRecipe);
-
-        var savedFavoriteRecipeDto = new FavoriteRecipeDto
-        {
-            Id = favoriteRecipe.Id,
-            UserId = favoriteRecipe.UserId,
-            RecipeId = favoriteRecipe.RecipeId,
-            DateAdded = favoriteRecipe.DateAdded,
-        };
-
-        return CreatedAtAction(nameof(GetFavoriteRecipes), savedFavoriteRecipeDto);
-    }
-
-    [HttpPut("favoriterecipes/{id}")]
-    public async Task<IActionResult> UpdateFavoriteRecipe(int id, FavoriteRecipeDto updatedFavoriteRecipeDto)
-    {
-        var existingFavoriteRecipe = await _favoriteRepository.GetFavoriteRecipeAsync(id);
-
-        if (existingFavoriteRecipe == null)
-        {
-            return NotFound();
-        }
-        existingFavoriteRecipe.UserId = updatedFavoriteRecipeDto.UserId;
-        existingFavoriteRecipe.RecipeId = updatedFavoriteRecipeDto.RecipeId;
-
-        await _favoriteRepository.UpdateFavoriteRecipeAsync(id, existingFavoriteRecipe);
-
-        return NoContent();
-    }
-
-    [HttpDelete("favoriterecipes/{id}")]
-    public async Task<IActionResult> DeleteFavoriteRecipe(int id)
-    {
-        var existingFavoriteRecipe = await _favoriteRepository.GetFavoriteRecipeAsync(id);
-
-        if (existingFavoriteRecipe == null)
-        {
-            return NotFound();
-        }
-
-        await _favoriteRepository.DeleteFavoriteRecipeAsync(id);
-
-        return NoContent();
-    }
-
-    [HttpGet("mealplans")]
-    public async Task<ActionResult<IEnumerable<MealPlanD>>> GetMealPlans()
-    {
-        var mealPlans = await _mealPlanRepository.GetAllMealPlansAsync();
-        var mealPlanDtos = mealPlans.Select(mp => new MealPlanDto
-        {
-            Id = mp.Id,
-            Name = mp.Name,
-            Date = mp.Date,
-            Meals = mp.Meals.Select(m => new MealDto
-            {
-                Id = m.Id,
-                Name = m.Name,
-            }).ToList(),
-        });
-
-        return Ok(mealPlanDtos);
-    }
-
-    [HttpPost("mealplans")]
-    public async Task<ActionResult<MealPlanDto>> CreateMealPlan(MealPlanDto mealPlanDto)
-    {
-        var mealPlan = new MealPlan
-        {
-            Name = mealPlanDto.Name,
-            Date = mealPlanDto.Date,
-            Meals = mealPlanDto.Meals.Select(mealDto => new Meal
-            {
-                Name = mealDto.Name,
-            }).ToList(),
-        };
-
-        await _mealPlanRepository.AddMealPlanAsync(mealPlan);
-
-        var savedMealPlanDto = new MealPlanDto
-        {
-            Id = mealPlan.Id,
-            Name = mealPlan.Name,
-            Date = mealPlan.Date,
-            Meals = mealPlan.Meals.Select(meal => new MealDto
-            {
-                Id = meal.Id,
-                Name = meal.Name,
-            }).ToList(),
-            
-        };
-}
-
- [HttpGet("sessions")]
-    public async Task<ActionResult<IEnumerable<SessionDto>>> GetSessions()
-    {
-        var sessions = await _sessionRepository.GetAllSessionsAsync();
-        var sessionDtos = sessions.Select(s => new SessionDto
-        {
-            Id = s.Id,
-            Name = s.Name,
-            StartTime = s.StartTime,
-        });
+            Id = session.Id,
+            DateTime = session.DateTime
+            // Map other properties here
+        }).ToList();
 
         return Ok(sessionDtos);
     }
-    [HttpPost("sessions")]
-    public async Task<ActionResult<SessionDto>> CreateSession(SessionDto sessionDto)
+
+    [HttpGet("{id}")]
+    public ActionResult<MealSessionDto> GetSession(int id)
     {
-        var session = new Session
-        {
-            Name = sessionDto.Name,
-            StartTime = sessionDto.StartTime,
-        };
+        var session = _repository.Get(id);
+        if (session == null)
+            return NotFound();
 
-        await _sessionRepository.AddSessionAsync(session);
-
-        var savedSessionDto = new SessionDto
+        var sessionDto = new MealSessionDto
         {
             Id = session.Id,
-            Name = session.Name,
-            StartTime = session.StartTime,
+            DateTime = session.DateTime
+            // Map other properties here
         };
 
-        return CreatedAtAction(nameof(GetSessions), savedSessionDto);
+        return Ok(sessionDto);
     }
 
-     [HttpPut("sessions/{id}")]
-    public async Task<IActionResult> UpdateSession(int id, SessionDto updatedSessionDto)
+    [HttpPost]
+    public ActionResult<MealSessionDto> CreateSession(MealSession model)
     {
-        var existingSession = await _sessionRepository.GetSessionAsync(id);
+        // You can perform validation here if needed
+        var createdSession = _repository.Create(model);
 
-        if (existingSession == null)
+        var sessionDto = new MealSessionDto
         {
+            Id = createdSession.Id,
+            DateTime = createdSession.DateTime
+            // Map other properties here
+        };
+
+        return CreatedAtAction(nameof(GetSession), new { id = sessionDto.Id }, sessionDto);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateSession(int id, MealSession model)
+    {
+        var existingSession = _repository.Get(id);
+        if (existingSession == null)
             return NotFound();
-        }
 
-        existingSession.Name = updatedSessionDto.Name;
-        existingSession.StartTime = updatedSessionDto.StartTime;
+        existingSession.DateTime = model.DateTime;
+        // Update other properties as needed
 
-        await _sessionRepository.UpdateSessionAsync(id, existingSession);
-
+        _repository.Update(existingSession);
         return NoContent();
     }
 
-    [HttpDelete("sessions/{id}")]
-    public async Task<IActionResult> DeleteSession(int id)
+    [HttpDelete("{id}")]
+    public IActionResult DeleteSession(int id)
     {
-        var existingSession = await _sessionRepository.GetSessionAsync(id);
-
-        if (existingSession == null)
-        {
+        var session = _repository.Get(id);
+        if (session == null)
             return NotFound();
-        }
 
-        await _sessionRepository.DeleteSessionAsync(id);
-
+        _repository.Delete(id);
         return NoContent();
     }
 }
