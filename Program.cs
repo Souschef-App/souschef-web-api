@@ -21,10 +21,9 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
 
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<ICookingSessionRepository, CookingSessionRepository>();
-builder.services.AddScoped<ISessionRepository, SessionRepository>();
-builder.services.AddScoped<IMealPlanRepository, MealPlanRepository>();
-builder.services.AddScoped<IFavoriteRepository, FavoriteRepository>(); //check this
-
+builder.Services.AddScoped<FavoriteRecipeRepository>();
+builder.Services.AddScoped<MealPlanRepository>();
+builder.Services.AddScoped<MealSessionRepository>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
