@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[Route("api/sessions")]
+[Route("api/mealsessions")]
 [ApiController]
-public class SessionController : ControllerBase
+public class MealSessionController : ControllerBase
 {
-    private readonly SessionRepository _repository;
+    private readonly MealSessionRepository _repository;
 
-    public SessionController(SessionRepository repository)
+    public MealSessionController(MealSessionRepository repository)
     {
         _repository = repository;
     }
@@ -22,7 +22,6 @@ public class SessionController : ControllerBase
         {
             Id = session.Id,
             DateTime = session.DateTime
-            // Map other properties here
         }).ToList();
 
         return Ok(sessionDtos);
@@ -48,14 +47,13 @@ public class SessionController : ControllerBase
     [HttpPost]
     public ActionResult<MealSessionDto> CreateSession(MealSession model)
     {
-        // You can perform validation here if needed
         var createdSession = _repository.Create(model);
 
         var sessionDto = new MealSessionDto
         {
             Id = createdSession.Id,
             DateTime = createdSession.DateTime
-            // Map other properties here
+            
         };
 
         return CreatedAtAction(nameof(GetSession), new { id = sessionDto.Id }, sessionDto);
@@ -69,7 +67,6 @@ public class SessionController : ControllerBase
             return NotFound();
 
         existingSession.DateTime = model.DateTime;
-        // Update other properties as needed
 
         _repository.Update(existingSession);
         return NoContent();

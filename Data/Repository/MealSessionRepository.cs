@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class SessionRepository
+public class MealSessionRepository
 {
     private readonly List<MealSession> _sessions = new List<MealSession>();
     private int _nextId = 1;
