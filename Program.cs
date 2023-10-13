@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PostGresDBContext>(opt =>
-        opt.UseNpgsql(ConnectionHelper.GetConnectionString("Username=postgres;Password=postgres;Server=db;Database=SousChefDB")));
+        opt.UseNpgsql(ConnectionHelper.GetConnectionString()));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<PostGresDBContext>();
