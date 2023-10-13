@@ -13,8 +13,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+Console.WriteLine(Environment.GetEnvironmentVariable("DB_CONNECTION")!);
+
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PostGresDBContext>(opt =>
-        opt.UseNpgsql(ConnectionHelper.GetConnectionString()));
+        opt.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION")!));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<PostGresDBContext>();

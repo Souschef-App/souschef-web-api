@@ -9,9 +9,15 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
-      - CONNECTIONSTRINGS__DEFAULT=User ID=postgres;Password=postgres;Host=souschef-postgres;Port=27017;Database=postgres
+      # - CONNECTIONSTRINGS__DEFAULT=User ID=postgres;Password=postgres;Host=souschef-postgres;Port=27017;Database=postgres
       # - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       # - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      # - DATABASE_URL=db
+      # - PGPORT=27017
+      # - PGUSER=postgres
+      # - PGPASSWORD=postgres
+      # - PGDATABASE=SousChefDB
+      - DB_CONNECTION=Username=postgres;Password=postgres;Server=db;Database=SousChefDB
     volumes:
       - ~/.aspnet/https:/https:ro
     depends_on:

@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using System.Diagnostics;
+using Npgsql;
 
 namespace souschef.server.Helpers
 {
@@ -25,7 +26,10 @@ namespace souschef.server.Helpers
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true
             };
+
+            Console.WriteLine("buiild string" + builder.ToString());
             return builder.ToString();
         }
     }
 }
+
