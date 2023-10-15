@@ -13,8 +13,8 @@ namespace souschef.server.Helpers
                 Name = user.UserName,
                 Email = user.Email,
                 SkillLevel = user.SkillLevel,
-                CurrentSessionId = user.CurrentSessionId.ToString(),
-                CurrentRecipe = null,
+ /*               CurrentSessionId = user.CurrentSessionId.ToString(),
+                CurrentRecipe = null,*/
             };
         }
 
