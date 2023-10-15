@@ -42,15 +42,6 @@ namespace souschef.server.Helpers
             return null;
         }
 
-        public static Data.LiveSession.LiveSessions.LiveRecipe ToLiveRecipe(Recipe recipe)
-        {
-            return new Data.LiveSession.LiveSessions.LiveRecipe
-            {
-                id = recipe.Id,
-                Tasks = recipe.Tasks
-            };
-        }
-
         public static long GetUnixTimeStamp(DateTime _dateTime)
         {
            return ((DateTimeOffset)_dateTime).ToUnixTimeSeconds();
