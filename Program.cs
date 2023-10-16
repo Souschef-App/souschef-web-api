@@ -14,14 +14,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+Console.WriteLine(Environment.GetEnvironmentVariable("DB_CONNECTION")!);
+
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PostGresDBContext>(opt =>
-        opt.UseNpgsql(ConnectionHelper.GetConnectionString("Username=postgres;Password=postgres;Server=db;Database=SousChefDB")));
+        opt.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION")!));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<PostGresDBContext>();
 
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<ICookingSessionRepository, CookingSessionRepository>();
+builder.Services.AddScoped<FavoriteRecipeRepository>();
+builder.Services.AddScoped<MealPlanRepository>();
+builder.Services.AddScoped<MealSessionRepository>();
 
 builder.Services.AddSingleton<ISubTaskGenerationService, SubTaskGenerationService>();
 

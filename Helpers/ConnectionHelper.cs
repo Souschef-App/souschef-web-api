@@ -1,31 +1,35 @@
-﻿using Npgsql;
+﻿using System.Diagnostics;
+using Npgsql;
 
 namespace souschef.server.Helpers
 {
     public static class ConnectionHelper
     {
-        public static string GetConnectionString(string connectionString)
+        public static string GetConnectionString()
         {
-            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-            return string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
+            // var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            return BuildConnectionString();
         }
 
         //build the connection string from the environment
-        private static string BuildConnectionString(string databaseUrl)
+        private static string BuildConnectionString()
         {
-            var databaseUri = new Uri(databaseUrl);
-            var userInfo = databaseUri.UserInfo.Split(':');
+            // var databaseUri = new Uri(databaseUrl);
+            // var userInfo = databaseUri.UserInfo.Split(':');
             var builder = new NpgsqlConnectionStringBuilder
             {
-                Host = databaseUri.Host,
-                Port = databaseUri.Port,
-                Username = userInfo[0],
-                Password = userInfo[1],
-                Database = databaseUri.LocalPath.TrimStart('/'),
+                Host = Environment.GetEnvironmentVariable("DATABASE_URL"),
+                Port = int.Parse(Environment.GetEnvironmentVariable("PGPORT")!),
+                Username = Environment.GetEnvironmentVariable("PGUSER"),
+                Password = Environment.GetEnvironmentVariable("PGPASSWORD"),
+                Database = Environment.GetEnvironmentVariable("PGDATABASE"),
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true
             };
+
+            Console.WriteLine("buiild string" + builder.ToString());
             return builder.ToString();
         }
     }
 }
+
