@@ -6,15 +6,15 @@ namespace souschef.server.Data;
 
 public class PostGresDBContext : IdentityDbContext<ApplicationUser>
 {
-    public PostGresDBContext(DbContextOptions<PostGresDBContext> options) : base(options) 
-    { 
+    public PostGresDBContext(DbContextOptions<PostGresDBContext> options) : base(options)
+    {
 
     }
 
     public DbSet<ApplicationUser>? ApplicationUsers { get; set; }
-    public DbSet<CookingSession>?  CookingSession   { get; set; }
-    public DbSet<Recipe>?          Recipes          { get; set; }
-    public DbSet<Models.Task>?     Tasks            { get; set; }
-    public DbSet<Ingredient>?      Ingredients      { get; set; }
-    public DbSet<Kitchenware>?     Kitchenware      { get; set; }
+    public DbSet<CookingSession>? CookingSessions { get; set; }
+    public DbSet<Recipe>? Recipes { get; set; }
+    public DbSet<Models.Task>? Tasks { get; set; }
+    public DbSet<Ingredient>? Ingredients { get; set; }
+    public DbSet<Kitchenware>? Kitchenware { get; set; }
 }

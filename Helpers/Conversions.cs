@@ -13,8 +13,8 @@ namespace souschef.server.Helpers
                 Name = user.UserName,
                 Email = user.Email,
                 SkillLevel = user.SkillLevel,
-                CurrentSessionId = user.CurrentSessionId.ToString(),
-                CurrentRecipe = null,
+ /*               CurrentSessionId = user.CurrentSessionId.ToString(),
+                CurrentRecipe = null,*/
             };
         }
 
@@ -40,15 +40,6 @@ namespace souschef.server.Helpers
             }
 
             return null;
-        }
-
-        public static Data.LiveSession.LiveSessions.LiveRecipe ToLiveRecipe(Recipe recipe)
-        {
-            return new Data.LiveSession.LiveSessions.LiveRecipe
-            {
-                id = recipe.Id,
-                Tasks = recipe.Tasks
-            };
         }
 
         public static long GetUnixTimeStamp(DateTime _dateTime)

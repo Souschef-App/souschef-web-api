@@ -28,16 +28,16 @@ public class UserController : Controller
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
     {
-        if(dto.Password != dto.PasswordConfirm)
-            return new ContentResult() { Content = "Password Do Not Match", StatusCode = 403 };
+        if (dto.Password != dto.PasswordConfirm)
+            return new ContentResult() { Content = "Passwords do not match", StatusCode = 403 };
 
-        var user = new ApplicationUser() { UserName = dto.UserName, Email = dto.Email};
-        
+        var user = new ApplicationUser() { UserName = dto.UserName, Email = dto.Email };
+
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         if (!result.Succeeded)
         {
-            return new ContentResult() { Content = "Create User Failed", StatusCode = 403 };
+            return new ContentResult() { Content = "Registration failed", StatusCode = 403 };
         }
 
         return Ok();
@@ -52,7 +52,6 @@ public class UserController : Controller
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO dto)
     {
-        Console.WriteLine("Login Endpoint");
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -60,25 +59,20 @@ public class UserController : Controller
 
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
-        if (user == null)
+        if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
-            return new ContentResult() { Content = "User Not Found", StatusCode = 403 };
-        }
-
-        if (await _userManager.CheckPasswordAsync(user, dto.Password) == false)
-        {
-            return new ContentResult() { Content = "Invalid Password", StatusCode = 403 };
+            return new ContentResult() { Content = "Email or password invalid", StatusCode = 403 };
         }
 
         var result = await _signinManager.PasswordSignInAsync(user.UserName, dto.Password, false, true);
 
         if (!result.Succeeded)
         {
-            return new ContentResult() { Content = "SignIn Failed: Try Again", StatusCode = 403 };
+            return new ContentResult() { Content = "Login failed: Try again", StatusCode = 403 };
         }
         if (result.IsLockedOut)
         {
-            return new ContentResult() { Content = "Account Locked Out", StatusCode = 403 };
+            return new ContentResult() { Content = "Account locked out", StatusCode = 403 };
         }
 
         //await _userManager.AddClaimAsync(user, new Claim("UserRole", "Admin"));
@@ -95,12 +89,12 @@ public class UserController : Controller
 
         var userDTO = new UserDTO
         {
-            Id         = user.Id,
-            Name       = user.UserName,
-            Email      = user.Email,
+            Id = user.Id,
+            Name = user.UserName,
+            Email = user.Email,
             SkillLevel = user.SkillLevel
         };
-        
+
         return Ok(userDTO);
     }
 
@@ -174,7 +168,7 @@ public class UserController : Controller
         }
 
         user.UserName = dto.NewName;
-        user.Email    = dto.NewEmail;
+        user.Email = dto.NewEmail;
 
         await _userManager.UpdateAsync(user);
 
@@ -190,12 +184,12 @@ public class UserController : Controller
     public async Task<IActionResult> LogOut()
     {
         Console.WriteLine("Log out");
-        
+
         //Response.Cookies.Delete("jwt");
 
         await _signinManager.SignOutAsync();
-        
-        return Ok(new { message="success" });
+
+        return Ok(new { message = "success" });
     }
 
     [HttpPost("set-user-skill")]

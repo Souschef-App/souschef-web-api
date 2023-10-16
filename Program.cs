@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 Console.WriteLine(Environment.GetEnvironmentVariable("DB_CONNECTION")!);
 
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PostGresDBContext>(opt =>
-        opt.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION")!));
+        opt.UseNpgsql(ConnectionHelper.GetConnectionString("Username=postgres;Password=postgres;Server=db;Database=SousChefDB")));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<PostGresDBContext>();
