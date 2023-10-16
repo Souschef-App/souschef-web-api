@@ -3,6 +3,6 @@
     public interface ISubTaskGenerationService
     {
         void StartInferenceSession(string ID);
-        Task<string> RequestSubTaskGeneration(string ID, string recipeStep);
+        Task<string> RequestSubTaskGeneration(string recipeStep);
     }
 }
