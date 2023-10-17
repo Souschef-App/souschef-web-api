@@ -29,7 +29,11 @@ public class UserController : Controller
     public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
     {
         if (dto.Password != dto.PasswordConfirm)
-            return new ContentResult() { Content = "Passwords do not match", StatusCode = 403 };
+            return new ContentResult() 
+            { 
+                Content = "The entered passwords do not match. Please ensure that both passwords are identical.", 
+                StatusCode = 400 
+            };
 
         var user = new ApplicationUser() { UserName = dto.UserName, Email = dto.Email };
 
@@ -37,10 +41,19 @@ public class UserController : Controller
 
         if (!result.Succeeded)
         {
-            return new ContentResult() { Content = "Registration failed", StatusCode = 403 };
+            var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
+            return new ContentResult() { Content = $"Registration failed: {errorMessages}", StatusCode = 400 };
         }
 
-        return Ok();
+        var userDTO = new UserDTO
+        {
+            Id = user.Id,
+            Name = user.UserName,
+            Email = user.Email,
+            SkillLevel = user.SkillLevel
+        };
+
+        return Ok(userDTO);
     }
 
     /// <summary>
@@ -61,7 +74,7 @@ public class UserController : Controller
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
-            return new ContentResult() { Content = "Email or password invalid", StatusCode = 403 };
+            return new ContentResult() { Content = "Invalid email or password. Please check your credentials and try again.", StatusCode = 400 };
         }
 
         var result = await _signinManager.PasswordSignInAsync(user.UserName, dto.Password, false, true);
@@ -72,7 +85,11 @@ public class UserController : Controller
         }
         if (result.IsLockedOut)
         {
-            return new ContentResult() { Content = "Account locked out", StatusCode = 403 };
+            return new ContentResult() 
+            { 
+                Content = "Your account has been temporarily locked due to multiple login attempts. Please try again later or contact support.", 
+                StatusCode = 403 
+            };
         }
 
         //await _userManager.AddClaimAsync(user, new Claim("UserRole", "Admin"));
