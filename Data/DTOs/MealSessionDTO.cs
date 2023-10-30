@@ -1,5 +1,10 @@
+using souschef.server.Data.Models;
+
 public class MealSessionDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public DateTime DateTime { get; set; }
+
+    public MealPlan Plan { get; set; }
+    public List<MealSessionUser> Users { get; set; }
 }
