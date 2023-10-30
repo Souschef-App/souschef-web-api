@@ -1,48 +1,38 @@
 // Repositories/FavoriteRecipeRepository.cs
 
+using souschef.server.Data;
+using souschef.server.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class FavoriteRecipeRepository
 {
-    private readonly List<FavoriteRecipe> _favoriteRecipes = new List<FavoriteRecipe>();
-    private int _nextId = 1;
+    private readonly PostGresDBContext _context;
+    public FavoriteRecipeRepository(PostGresDBContext context) { _context = context; }
 
-    public FavoriteRecipe Create(FavoriteRecipe favoriteRecipe)
+    public IEnumerable<FavoriteRecipe> GetFavoriteRecipes(Guid userId)
     {
-        favoriteRecipe.Id = _nextId++;
-        _favoriteRecipes.Add(favoriteRecipe);
-        return favoriteRecipe;
+        return _context.ApplicationUsers.Include(c => c.FavoriteRecipes).ThenInclude(x => x.Recipe).FirstOrDefault(c => c.Id.Equals(userId.ToString())).FavoriteRecipes;
     }
 
-    public FavoriteRecipe? Get(int id)
+    public void AddRecipeToFavorite(Guid userId, Guid recipeId)
     {
-        return _favoriteRecipes.FirstOrDefault(fr => fr.Id == id);
+        ApplicationUser user = _context.ApplicationUsers.FirstOrDefault(c => c.Id.Equals(userId.ToString()));
+        Recipe recipe = _context.Recipes.FirstOrDefault(c => c.Id.Equals(recipeId));
+        FavoriteRecipe favRecipe = new FavoriteRecipe();
+        favRecipe.Recipe = recipe;
+        favRecipe.ApplicationUser = user;
+        _context.FavoriteRecipes.Add(favRecipe);
+        _context.SaveChanges();
     }
 
-    public IEnumerable<FavoriteRecipe> GetAll()
+    public void DeleteRecipeFromFavorite(Guid userId, Guid recipeId)
     {
-        return _favoriteRecipes;
-    }
-
-    public void Update(FavoriteRecipe favoriteRecipe)
-    {
-        var existingRecipe = Get(favoriteRecipe.Id);
-        if (existingRecipe != null)
-        {
-            existingRecipe.Name = favoriteRecipe.Name;
-            existingRecipe.Description = favoriteRecipe.Description;
-            existingRecipe.IsFavorite = favoriteRecipe.IsFavorite;
-        }
-    }
-
-    public void Delete(int id)
-    {
-        var favoriteRecipe = Get(id);
-        if (favoriteRecipe != null)
-        {
-            _favoriteRecipes.Remove(favoriteRecipe);
-        }
+        ApplicationUser user = _context.ApplicationUsers.Include(c => c.FavoriteRecipes).ThenInclude(x => x.Recipe).FirstOrDefault(c => c.Id.Equals(userId.ToString()));
+        FavoriteRecipe favRecipe = user.FavoriteRecipes.Find(c => c.Recipe.Id.Equals(recipeId));
+        _context.FavoriteRecipes.Remove(favRecipe);
+        _context.SaveChanges();
     }
 }
