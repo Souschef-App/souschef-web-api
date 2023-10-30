@@ -12,6 +12,7 @@ namespace souschef.server.Data.Models
         public List<CookingSession>? CookingSessions {get; set;}
         public Guid? CurrentSessionId { get; set; }
 */
+        public List<FavoriteRecipe>? FavoriteRecipes { get; set; }
     }
 }
     
