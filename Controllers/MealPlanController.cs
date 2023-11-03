@@ -105,13 +105,14 @@ public class MealPlanController : ControllerBase
         return Ok(_repository.GetMealPlanRecipes(id));
     }
 
-    [HttpPost("{id}/recipes/{recipeId}")]
-    public IActionResult AddRecipeToMealPlan(Guid id, Guid recipeId)
+
+    [HttpPost("{id}/recipes/{type}/{recipeId}")]
+    public IActionResult AddRecipeToMealPlan(Guid id, string type, Guid recipeId)
     {
         var existingMealPlan = _repository.Get(id);
         if (existingMealPlan == null)
             return NotFound();
-        _repository.AddRecipeToMealPlan(id, recipeId);
+        _repository.AddRecipeToMealPlan(id, type, recipeId);
         return Ok();
     }
 
