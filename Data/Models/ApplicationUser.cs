@@ -7,11 +7,6 @@ namespace souschef.server.Data.Models
     {
         public int SkillLevel {get; set;}
         public List<Recipe>? Recipes {get; set;}
-/*
-        [InverseProperty("Host")]
-        public List<CookingSession>? CookingSessions {get; set;}
-        public Guid? CurrentSessionId { get; set; }
-*/
     }
 }
     

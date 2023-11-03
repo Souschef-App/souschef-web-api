@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace souschef.server.Data.Models
 {
-    public class CookingSession
+    public class LiveSession
     {
         [Key]
         public int? Code { get; set; }
