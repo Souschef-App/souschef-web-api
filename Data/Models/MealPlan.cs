@@ -11,5 +11,6 @@ public class MealPlan
     public string Name { get; set; }
 
     public List<MealPlanRecipe>? Recipes { get; set; }
+    public ApplicationUser? ApplicationUser { get; set; }
     //public bool IsFavorite { get; set; } // New property for indicating if it's a favorite
 }
