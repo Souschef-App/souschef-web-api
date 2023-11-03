@@ -45,11 +45,13 @@ public class MealPlanRepository
         return MealPlans.FirstOrDefault(c => c.Id == id).Recipes;
     }
 
-    public void AddRecipeToMealPlan(Guid id, Guid recipeId)
+    public void AddRecipeToMealPlan(Guid id, string type, Guid recipeId)
     {
         MealPlan mealPlan = Get(id);
         MealPlanRecipe mealPlanRecipe = new MealPlanRecipe();
         mealPlanRecipe.Recipe = _context.Recipes.FirstOrDefault(c => c.Id == recipeId);
+        mealPlanRecipe.MealType = type;
+        mealPlanRecipe.Order = 0;
         mealPlanRecipe.MealPlan = mealPlan;
 
         _context.MealPlanRecipes.Add(mealPlanRecipe);
