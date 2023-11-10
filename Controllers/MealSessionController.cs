@@ -24,6 +24,8 @@ public class MealSessionController : ControllerBase
         {
             Id = session.Id,
             DateTime = session.DateTime,
+            SessionCode = session.SessionCode,
+            ServerIp = session.ServerIp,
             Users = session.Users,
             Plan = session.Plan
         }).ToList();
@@ -42,7 +44,8 @@ public class MealSessionController : ControllerBase
         {
             Id = session.Id,
             DateTime = session.DateTime,
-            // Map other properties here
+            SessionCode = session.SessionCode,
+            ServerIp = session.ServerIp,
             Users = session.Users,
             Plan = session.Plan
         };
@@ -50,15 +53,30 @@ public class MealSessionController : ControllerBase
         return Ok(sessionDto);
     }
 
+    [HttpGet("join/{code}")]
+    public ActionResult<MealSessionDto> GetSession(string code)
+    {
+        var session = _repository.GetByCode(code);
+        if (session == null)
+            return NotFound();
+
+        return Ok(session);
+    }
+
     [HttpPost()]
     public ActionResult<MealSessionDto> CreateSession(MealSessionCreateDTO model)
     {
+        Random random = new Random();
+        int otpCode = random.Next(0, 100000);
+        model.SessionCode = otpCode.ToString("D5");
+        model.ServerIp = "192.168.145.18:8082"; // Change to websocket server's ip address and port.
         var createdSession = _repository.Create(model);
-
         var sessionDto = new MealSessionDto
         {
             Id = createdSession.Id,
             DateTime = createdSession.DateTime,
+            SessionCode = createdSession.SessionCode,
+            ServerIp = createdSession.ServerIp,
             Users = createdSession.Users,
             Plan = createdSession.Plan
         };

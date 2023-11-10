@@ -11,7 +11,7 @@ using System.Linq;
 public class MealSessionRepository
 {
     private readonly PostGresDBContext _context;
-    public IEnumerable<MealSession>? MealSessions => _context.MealSessions.Include(c => c.Users).Include(c => c.Plan);
+    public IEnumerable<MealSession>? MealSessions => _context.MealSessions.Include(c => c.Users).Include(c => c.Plan).ThenInclude(x => x.Recipes).ThenInclude(y => y.Recipe);
 
     public MealSessionRepository(PostGresDBContext context)
     {
@@ -23,6 +23,8 @@ public class MealSessionRepository
         MealSession newSession = new MealSession();
         newSession.DateTime = session.DateTime;
         newSession.Plan = _context.MealPlans.FirstOrDefault(c => c.Id == session.PlanId);
+        newSession.ServerIp = session.ServerIp;
+        newSession.SessionCode = session.SessionCode;
         var res = _context.MealSessions.Add(newSession);
         _context.SaveChanges();
         return res.Entity;
@@ -30,7 +32,12 @@ public class MealSessionRepository
 
     public MealSession? Get(Guid id)
     {
-        return _context.MealSessions.FirstOrDefault(c => c.Id == id);
+        return MealSessions.FirstOrDefault(c => c.Id == id);
+    }
+    
+    public MealSession? GetByCode(string code)
+    {
+        return MealSessions.FirstOrDefault(c => c.SessionCode.Equals(code));
     }
 
     public IEnumerable<MealSession> GetAll()
