@@ -7,7 +7,5 @@ namespace souschef.server.Data.DTOs
         public string? Name { get; set; }
         public string? Email { get; set; }
         public int     SkillLevel { get; set; }
-        public string? CurrentSessionId { get; set; }
-        public Guid?   CurrentRecipe { get; set; }
     }
 }
