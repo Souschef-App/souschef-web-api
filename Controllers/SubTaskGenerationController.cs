@@ -43,5 +43,39 @@ namespace souschef.server.Controllers
                 return new ContentResult() { Content = "Generation Failed", StatusCode = 500 };
             }
         }
+
+        [HttpPost("request")]
+        public async Task<ActionResult<IEnumerable<Recipe>>> RequestSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
+        {
+            if (_dto.Recipe == null)
+                return new ContentResult() { Content = "Recipe can't be null", StatusCode = 500 };
+
+            var subtask = await m_SubTaskGenerationService.RequestRegenerationOfSubTask(_dto.Recipe, "00");
+            if (subtask != null)
+            {
+                return Ok(subtask);
+            }
+            else
+            {
+                return new ContentResult() { Content = "Generation Failed", StatusCode = 500 };
+            }
+        }
+
+        [HttpPost("request")]
+        public async Task<ActionResult<IEnumerable<Recipe>>> RequestAllSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
+        {
+            if (_dto.Recipe == null)
+                return new ContentResult() { Content = "Recipe can't be null", StatusCode = 500 };
+
+            var subtask = await m_SubTaskGenerationService.RequestRegenerationOfAllSubTask(_dto.Recipe, "01");
+            if (subtask != null)
+            {
+                return Ok(subtask);
+            }
+            else
+            {
+                return new ContentResult() { Content = "Generation Failed", StatusCode = 500 };
+            }
+        }
     }
 }
