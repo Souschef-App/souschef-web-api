@@ -41,9 +41,10 @@ namespace souschef.server.Services.SubtaskGeneration
 
             for (int i = 0; i < reply.Tasks.Count; i++)
             {
+
                 var task = new Data.Models.Task
                 {
-                    Id = Guid.NewGuid(),
+                    Id = new Guid(reply.Tasks[i].Uuid.ToByteArray()),
                     Title = reply.Tasks[i].Title,
                     Description = reply.Tasks[i].Description,
                     Duration = 0,
@@ -55,6 +56,8 @@ namespace souschef.server.Services.SubtaskGeneration
                     InProgress = false,
                     Assignee = null,
                 };
+
+                Console.WriteLine("Id " + task.Id);
 
                 tasks.Add(task);
             }
