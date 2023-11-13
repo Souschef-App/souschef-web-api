@@ -2,8 +2,6 @@
 using Grpc.Net.Client;
 using OpenAI_API;
 
-
-
 namespace souschef.server.Services.SubtaskGeneration
 {
     public class SubTaskGenerationService : ISubTaskGenerationService
@@ -30,15 +28,40 @@ namespace souschef.server.Services.SubtaskGeneration
 
         }
 
-        public async Task<string> RequestSubTaskGeneration(string recipeStep)
+        public async Task<List<Data.Models.Task>> RequestSubTaskGeneration(string recipeStep)
         {
             using var channel = GrpcChannel.ForAddress("http://ai:50051");
             var client = new RecipeGeneration.RecipeGenerationClient(channel);
 
-            Debug.WriteLine("REQUESTIN REPLY");
             var reply = await client.getRecipeBreakDownAsync(new RecipeBreakdownRequest { Description = "cook the chicken" });
-            Console.WriteLine("Greeting: " + reply.Message);
-            return reply.Message;
+
+            Console.WriteLine("reply " + reply.Tasks.Count);
+
+            List<Data.Models.Task> tasks = new();
+
+            for (int i = 0; i < reply.Tasks.Count; i++)
+            {
+                var task = new Data.Models.Task
+                {
+                    Id = Guid.NewGuid(),
+                    Title = reply.Tasks[i].Title,
+                    Description = reply.Tasks[i].Description,
+                    Duration = 0,
+                    Difficulty = reply.Tasks[i].Difficulty,
+                    Order = 0,
+                    Dependencies = null,
+                    Points = 0,
+                    Finished = false,
+                    InProgress = false,
+                    Assignee = null,
+                };
+
+                tasks.Add(task);
+            }
+
+            Console.WriteLine("Count " + tasks.Count);
+
+            return tasks;
         }
 
         public async Task<string> RequestRegenerationOfSubTask(string subTask, string ID)
