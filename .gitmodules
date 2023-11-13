@@ -1,0 +1,3 @@
+[submodule "recipe-generation-service-definitions"]
+	path = Services/SubtaskGeneration/Proto
+	url = https://github.com/Souschef-App/grcp-service-definitions.git

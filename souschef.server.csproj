@@ -37,5 +37,9 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Protobuf Include="Services\SubtaskGeneration\Proto\recipe_generation.proto" GrpcServices="Client" />
+  </ItemGroup>
+
 </Project>
   

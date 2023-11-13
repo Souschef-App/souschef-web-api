@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using souschef.server.Data.DTOs;
 using souschef.server.Data.Models;
-using souschef.server.Services;
+using souschef.server.Services.SubtaskGeneration;
 
 namespace souschef.server.Controllers
 {
@@ -44,7 +44,7 @@ namespace souschef.server.Controllers
             }
         }
 
-        [HttpPost("request")]
+        [HttpPost("requestone")]
         public async Task<ActionResult<IEnumerable<Recipe>>> RequestSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
         {
             if (_dto.Recipe == null)
@@ -61,7 +61,7 @@ namespace souschef.server.Controllers
             }
         }
 
-        [HttpPost("request")]
+        [HttpPost("requestall")]
         public async Task<ActionResult<IEnumerable<Recipe>>> RequestAllSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
         {
             if (_dto.Recipe == null)

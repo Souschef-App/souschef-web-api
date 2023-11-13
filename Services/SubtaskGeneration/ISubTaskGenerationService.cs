@@ -1,4 +1,4 @@
-﻿namespace souschef.server.Services
+﻿namespace souschef.server.Services.SubtaskGeneration
 {
     public interface ISubTaskGenerationService
     {
