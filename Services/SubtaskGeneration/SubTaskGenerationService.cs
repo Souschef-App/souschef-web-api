@@ -50,7 +50,7 @@ namespace souschef.server.Services.SubtaskGeneration
                     Duration = 0,
                     Difficulty = reply.Tasks[i].Difficulty,
                     Order = 0,
-                    Dependencies = null,
+                    Dependencies = GetGUIDArrayFromByteString(reply.Tasks[i].Dependencies),
                     Points = 0,
                     Finished = false,
                     InProgress = false,
@@ -65,6 +65,17 @@ namespace souschef.server.Services.SubtaskGeneration
             Console.WriteLine("Count " + tasks.Count);
 
             return tasks;
+        }
+
+        static Guid[] GetGUIDArrayFromByteString(Google.Protobuf.Collections.RepeatedField<Google.Protobuf.ByteString> bytesStrings)
+        {
+            List<Guid> uuids = new();
+            foreach (var bytesString in bytesStrings)
+            {
+                uuids.Add(new Guid(bytesString.ToByteArray()));
+            }
+
+            return uuids.ToArray();
         }
 
         public async Task<string> RequestRegenerationOfSubTask(string subTask, string ID)
