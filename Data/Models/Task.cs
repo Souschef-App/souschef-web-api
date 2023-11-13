@@ -19,9 +19,9 @@ namespace souschef.server.Data.Models
         public int Difficulty { get; set; }
 
         public int Order { get; set; }
-        public int[]? Dependencies { get; set; }
+        public Guid[]? Dependencies { get; set; }
 
-        public int  Points { get; set; }
+        public int Points { get; set; }
         public bool Finished { get; set; }
         public bool InProgress { get; set; }
         public ApplicationUser? Assignee { get; set; }

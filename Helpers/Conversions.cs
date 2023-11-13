@@ -13,8 +13,8 @@ namespace souschef.server.Helpers
                 Name = user.UserName,
                 Email = user.Email,
                 SkillLevel = user.SkillLevel,
- /*               CurrentSessionId = user.CurrentSessionId.ToString(),
-                CurrentRecipe = null,*/
+                /*               CurrentSessionId = user.CurrentSessionId.ToString(),
+                               CurrentRecipe = null,*/
             };
         }
 
@@ -24,17 +24,17 @@ namespace souschef.server.Helpers
             {
                 return new Data.Models.Task
                 {
-                    Id           = Guid.NewGuid(),
-                    Title        = _step.Title,
-                    Description  = _step.Instructions,
-                    Ingredients  = _step.Ingredients.ToList(),
-                    Kitchenware  = _step.KitchenWare.ToList(),
-                    Difficulty   = _step.Difficulty,
-                    Order        = _step.Order,
-                    Duration     = _step.Duration,
-                    Dependencies = _step.Dependencies,
-                    InProgress   = false,
-                    Finished     = false,
+                    Id = Guid.NewGuid(),
+                    Title = _step.Title,
+                    Description = _step.Instructions,
+                    Ingredients = _step.Ingredients.ToList(),
+                    Kitchenware = _step.KitchenWare.ToList(),
+                    Difficulty = _step.Difficulty,
+                    Order = _step.Order,
+                    Duration = _step.Duration,
+                    Dependencies = null, //_step.Dependencies
+                    InProgress = false,
+                    Finished = false,
                 };
 
             }
@@ -44,8 +44,8 @@ namespace souschef.server.Helpers
 
         public static long GetUnixTimeStamp(DateTime _dateTime)
         {
-           return ((DateTimeOffset)_dateTime).ToUnixTimeSeconds();
+            return ((DateTimeOffset)_dateTime).ToUnixTimeSeconds();
         }
-           
+
     }
 }
