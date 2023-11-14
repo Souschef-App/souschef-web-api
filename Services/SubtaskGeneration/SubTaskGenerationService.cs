@@ -105,14 +105,15 @@ namespace souschef.server.Services.SubtaskGeneration
                     unit = Units.none;
                 }
 
-                var ing = new Data.Models.Ingredient
+                var ingredient = new Data.Models.Ingredient
                 {
+                    Id = Guid.NewGuid(),
                     Name = protoIngredient.Name,
                     Quantity = protoIngredient.Quantity,
                     Unit = (int)unit
                 };
 
-                ingredients.Add(ing);
+                ingredients.Add(ingredient);
             }
 
             return ingredients;
