@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using souschef.server.Data.DTOs;
 using souschef.server.Data.Models;
-using souschef.server.Services;
+using souschef.server.Services.SubtaskGeneration;
 
 namespace souschef.server.Controllers
 {
@@ -28,15 +29,17 @@ namespace souschef.server.Controllers
 
 
         [HttpPost("request")]
-        public async Task<ActionResult<IEnumerable<Recipe>>> RequestSubTaskGeneration([FromBody] BreakDownRequestDTO _dto)
+        public async Task<ActionResult<IEnumerable<Data.Models.Task>>> RequestSubTaskGeneration([FromBody] BreakDownRequestDTO _dto)
         {
             if (_dto.Recipe == null)
                 return new ContentResult() { Content = "Recipe can't be null", StatusCode = 500 };
 
-            var subtask = await m_SubTaskGenerationService.RequestSubTaskGeneration(_dto.Recipe);
-            if (subtask != null)
+            var subtasks = await m_SubTaskGenerationService.RequestSubTaskGeneration(_dto.Recipe);
+
+            Debug.WriteLine(subtasks);
+            if (subtasks != null)
             {
-                return Ok(subtask);
+                return Ok(subtasks);
             }
             else
             {
@@ -44,7 +47,7 @@ namespace souschef.server.Controllers
             }
         }
 
-        [HttpPost("request")]
+        [HttpPost("requestone")]
         public async Task<ActionResult<IEnumerable<Recipe>>> RequestSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
         {
             if (_dto.Recipe == null)
@@ -61,7 +64,7 @@ namespace souschef.server.Controllers
             }
         }
 
-        [HttpPost("request")]
+        [HttpPost("requestall")]
         public async Task<ActionResult<IEnumerable<Recipe>>> RequestAllSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
         {
             if (_dto.Recipe == null)

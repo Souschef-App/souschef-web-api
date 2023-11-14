@@ -1,10 +1,11 @@
+using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using souschef.server.Data;
 using souschef.server.Data.Models;
 using souschef.server.Data.Repository;
 using souschef.server.Data.Repository.Contracts;
 using souschef.server.Helpers;
-using souschef.server.Services;
+using souschef.server.Services.SubtaskGeneration;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
