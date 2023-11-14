@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace souschef.server.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -292,22 +292,13 @@ namespace souschef.server.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Duration = table.Column<float>(type: "real", nullable: false),
                     Difficulty = table.Column<int>(type: "integer", nullable: false),
-                    Order = table.Column<int>(type: "integer", nullable: false),
-                    Dependencies = table.Column<int[]>(type: "integer[]", nullable: true),
-                    Points = table.Column<int>(type: "integer", nullable: false),
-                    Finished = table.Column<bool>(type: "boolean", nullable: false),
-                    InProgress = table.Column<bool>(type: "boolean", nullable: false),
-                    AssigneeId = table.Column<string>(type: "text", nullable: true),
+                    Dependencies = table.Column<Guid[]>(type: "uuid[]", nullable: true),
+                    IsBackground = table.Column<bool>(type: "boolean", nullable: false),
                     RecipeId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tasks_AspNetUsers_AssigneeId",
-                        column: x => x.AssigneeId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tasks_Recipes_RecipeId",
                         column: x => x.RecipeId,
@@ -492,11 +483,6 @@ namespace souschef.server.Migrations
                 name: "IX_Recipes_ApplicationUserId",
                 table: "Recipes",
                 column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_AssigneeId",
-                table: "Tasks",
-                column: "AssigneeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_RecipeId",

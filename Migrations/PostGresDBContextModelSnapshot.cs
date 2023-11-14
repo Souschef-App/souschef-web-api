@@ -459,9 +459,6 @@ namespace souschef.server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AssigneeId")
-                        .HasColumnType("text");
-
                     b.Property<Guid[]>("Dependencies")
                         .HasColumnType("uuid[]");
 
@@ -474,17 +471,8 @@ namespace souschef.server.Migrations
                     b.Property<float>("Duration")
                         .HasColumnType("real");
 
-                    b.Property<bool>("Finished")
+                    b.Property<bool>("IsBackground")
                         .HasColumnType("boolean");
-
-                    b.Property<bool>("InProgress")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("integer");
 
                     b.Property<Guid?>("RecipeId")
                         .HasColumnType("uuid");
@@ -493,8 +481,6 @@ namespace souschef.server.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AssigneeId");
 
                     b.HasIndex("RecipeId");
 
@@ -658,15 +644,9 @@ namespace souschef.server.Migrations
 
             modelBuilder.Entity("souschef.server.Data.Models.Task", b =>
                 {
-                    b.HasOne("souschef.server.Data.Models.ApplicationUser", "Assignee")
-                        .WithMany()
-                        .HasForeignKey("AssigneeId");
-
                     b.HasOne("souschef.server.Data.Models.Recipe", null)
                         .WithMany("Tasks")
                         .HasForeignKey("RecipeId");
-
-                    b.Navigation("Assignee");
                 });
 
             modelBuilder.Entity("MealPlan", b =>
