@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Reflection.Metadata;
 using Grpc.Net.Client;
+using Microsoft.Extensions.ObjectPool;
 using OpenAI_API;
 
 namespace souschef.server.Services.SubtaskGeneration
@@ -33,7 +35,7 @@ namespace souschef.server.Services.SubtaskGeneration
             using var channel = GrpcChannel.ForAddress("http://ai:50051");
             var client = new RecipeGeneration.RecipeGenerationClient(channel);
 
-            var reply = await client.getRecipeBreakDownAsync(new RecipeBreakdownRequest { Description = "cook the chicken" });
+            var reply = await client.getRecipeBreakDownAsync(new RecipeBreakdownRequest { Description = recipeStep });
 
             Console.WriteLine("reply " + reply.Tasks.Count);
 
@@ -41,7 +43,6 @@ namespace souschef.server.Services.SubtaskGeneration
 
             for (int i = 0; i < reply.Tasks.Count; i++)
             {
-
                 var task = new Data.Models.Task
                 {
                     Id = new Guid(reply.Tasks[i].Uuid.ToByteArray()),
@@ -49,16 +50,12 @@ namespace souschef.server.Services.SubtaskGeneration
                     Description = reply.Tasks[i].Description,
                     Duration = 0,
                     Difficulty = reply.Tasks[i].Difficulty,
-                    Order = 0,
                     Dependencies = GetGUIDArrayFromByteString(reply.Tasks[i].Dependencies),
-                    Points = 0,
-                    Finished = false,
-                    InProgress = false,
-                    Assignee = null,
+                    Ingredients = convertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
+                    Kitchenware = convertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
                 };
 
                 Console.WriteLine("Id " + task.Id);
-
                 tasks.Add(task);
             }
 
@@ -76,6 +73,43 @@ namespace souschef.server.Services.SubtaskGeneration
             }
 
             return uuids.ToArray();
+        }
+
+        List<Data.Models.Ingredient> convertProtoIngredientToIngredient(Google.Protobuf.Collections.RepeatedField<Ingredient> protoIngredients)
+        {
+            List<Data.Models.Ingredient> ingredients = new();
+
+            foreach (var protoIngredient in protoIngredients)
+            {
+                var ing = new Data.Models.Ingredient
+                {
+                    Name = protoIngredient.Name,
+                    Quantity = protoIngredient.Quantity,
+                    Unit = 0
+                };
+
+                ingredients.Add(ing);
+            }
+
+            return ingredients;
+        }
+
+        List<Data.Models.Kitchenware> convertProtoKitchenwareToKitchenware(Google.Protobuf.Collections.RepeatedField<Kitchenware> protoKitchenware)
+        {
+            List<Data.Models.Kitchenware> kitchenware = new();
+
+            foreach (var protoKitchenItem in protoKitchenware)
+            {
+                var kitchenItem = new Data.Models.Kitchenware
+                {
+                    Name = protoKitchenItem.Name,
+                    Quantity = protoKitchenItem.Quantity,
+                };
+
+                kitchenware.Add(kitchenItem);
+            }
+
+            return kitchenware;
         }
 
         public async Task<string> RequestRegenerationOfSubTask(string subTask, string ID)

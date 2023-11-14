@@ -30,11 +30,9 @@ namespace souschef.server.Helpers
                     Ingredients = _step.Ingredients.ToList(),
                     Kitchenware = _step.KitchenWare.ToList(),
                     Difficulty = _step.Difficulty,
-                    Order = _step.Order,
                     Duration = _step.Duration,
                     Dependencies = null, //_step.Dependencies
-                    InProgress = false,
-                    Finished = false,
+  
                 };
 
             }
