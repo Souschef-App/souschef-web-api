@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using souschef.server.Data;
@@ -11,13 +12,14 @@ using souschef.server.Data;
 namespace souschef.server.Migrations
 {
     [DbContext(typeof(PostGresDBContext))]
-    partial class PostGresDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231103112914_MealTypeAdded")]
+    partial class MealTypeAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -78,12 +80,6 @@ namespace souschef.server.Migrations
 
                     b.Property<Guid?>("PlanId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("ServerIp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SessionCode")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -462,8 +458,8 @@ namespace souschef.server.Migrations
                     b.Property<string>("AssigneeId")
                         .HasColumnType("text");
 
-                    b.Property<Guid[]>("Dependencies")
-                        .HasColumnType("uuid[]");
+                    b.Property<int[]>("Dependencies")
+                        .HasColumnType("integer[]");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");

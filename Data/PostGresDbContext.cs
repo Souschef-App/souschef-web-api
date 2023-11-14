@@ -17,4 +17,11 @@ public class PostGresDBContext : IdentityDbContext<ApplicationUser>
     public DbSet<Models.Task>? Tasks { get; set; }
     public DbSet<Ingredient>? Ingredients { get; set; }
     public DbSet<Kitchenware>? Kitchenware { get; set; }
+
+    public DbSet<MealPlanRecipe>? MealPlanRecipes { get; set; }
+    public DbSet<MealSessionUser>? MealSessionUsers { get; set; }
+
+    public DbSet<MealPlan>? MealPlans { get; set;}
+    public DbSet<MealSession>? MealSessions { get; set;}
+    public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; }
 }
