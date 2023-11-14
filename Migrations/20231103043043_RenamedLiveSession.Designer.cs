@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using souschef.server.Data;
@@ -11,9 +12,10 @@ using souschef.server.Data;
 namespace souschef.server.Migrations
 {
     [DbContext(typeof(PostGresDBContext))]
-    partial class PostGresDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231103043043_RenamedLiveSession")]
+    partial class RenamedLiveSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,76 +23,6 @@ namespace souschef.server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("FavoriteRecipe", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("RecipeId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("FavoriteRecipes");
-                });
-
-            modelBuilder.Entity("MealPlan", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("MealPlans");
-                });
-
-            modelBuilder.Entity("MealSession", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("PlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ServerIp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SessionCode")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanId");
-
-                    b.ToTable("MealSessions");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -353,54 +285,20 @@ namespace souschef.server.Migrations
                     b.ToTable("Kitchenware");
                 });
 
-            modelBuilder.Entity("souschef.server.Data.Models.MealPlanRecipe", b =>
+            modelBuilder.Entity("souschef.server.Data.Models.LiveSession", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int?>("Code")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("MealPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("MealType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Order")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("RecipeId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Code"));
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("MealPlanId");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("MealPlanRecipes");
-                });
-
-            modelBuilder.Entity("souschef.server.Data.Models.MealSessionUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SessionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
+                    b.Property<string>("IP")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Code");
 
-                    b.HasIndex("SessionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MealSessionUsers");
+                    b.ToTable("LiveSessions");
                 });
 
             modelBuilder.Entity("souschef.server.Data.Models.Recipe", b =>
@@ -485,43 +383,6 @@ namespace souschef.server.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("FavoriteRecipe", b =>
-                {
-                    b.HasOne("souschef.server.Data.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("FavoriteRecipes")
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("souschef.server.Data.Models.Recipe", "Recipe")
-                        .WithMany()
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("MealPlan", b =>
-                {
-                    b.HasOne("souschef.server.Data.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("MealPlans")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("MealSession", b =>
-                {
-                    b.HasOne("MealPlan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanId");
-
-                    b.Navigation("Plan");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -595,44 +456,6 @@ namespace souschef.server.Migrations
                         .HasForeignKey("TaskId");
                 });
 
-            modelBuilder.Entity("souschef.server.Data.Models.MealPlanRecipe", b =>
-                {
-                    b.HasOne("MealPlan", "MealPlan")
-                        .WithMany("Recipes")
-                        .HasForeignKey("MealPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("souschef.server.Data.Models.Recipe", "Recipe")
-                        .WithMany()
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MealPlan");
-
-                    b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("souschef.server.Data.Models.MealSessionUser", b =>
-                {
-                    b.HasOne("MealSession", "Session")
-                        .WithMany("Users")
-                        .HasForeignKey("SessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("souschef.server.Data.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Session");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("souschef.server.Data.Models.Recipe", b =>
                 {
                     b.HasOne("souschef.server.Data.Models.ApplicationUser", null)
@@ -653,22 +476,8 @@ namespace souschef.server.Migrations
                     b.Navigation("Assignee");
                 });
 
-            modelBuilder.Entity("MealPlan", b =>
-                {
-                    b.Navigation("Recipes");
-                });
-
-            modelBuilder.Entity("MealSession", b =>
-                {
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("souschef.server.Data.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("FavoriteRecipes");
-
-                    b.Navigation("MealPlans");
-
                     b.Navigation("Recipes");
                 });
 
