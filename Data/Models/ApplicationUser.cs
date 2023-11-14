@@ -7,5 +7,6 @@ namespace souschef.server.Data.Models
         {
                 public int SkillLevel { get; set; }
                 public List<Recipe>? Recipes { get; set; }
+                public List<FavoriteRecipe>? FavoriteRecipes { get; set; }
         }
 }

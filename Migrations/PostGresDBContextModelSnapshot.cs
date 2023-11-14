@@ -353,6 +353,22 @@ namespace souschef.server.Migrations
                     b.ToTable("Kitchenware");
                 });
 
+            modelBuilder.Entity("souschef.server.Data.Models.LiveSession", b =>
+                {
+                    b.Property<int?>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Code"));
+
+                    b.Property<string>("IP")
+                        .HasColumnType("text");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("LiveSessions");
+                });
+
             modelBuilder.Entity("souschef.server.Data.Models.MealPlanRecipe", b =>
                 {
                     b.Property<Guid>("Id")
@@ -507,7 +523,7 @@ namespace souschef.server.Migrations
             modelBuilder.Entity("MealPlan", b =>
                 {
                     b.HasOne("souschef.server.Data.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("MealPlans")
+                        .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
                     b.Navigation("ApplicationUser");
@@ -666,8 +682,6 @@ namespace souschef.server.Migrations
             modelBuilder.Entity("souschef.server.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("FavoriteRecipes");
-
-                    b.Navigation("MealPlans");
 
                     b.Navigation("Recipes");
                 });
