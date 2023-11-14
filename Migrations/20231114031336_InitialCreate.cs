@@ -51,7 +51,7 @@ namespace souschef.server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CookingSessions",
+                name: "LiveSessions",
                 columns: table => new
                 {
                     Code = table.Column<int>(type: "integer", nullable: false)
@@ -60,7 +60,7 @@ namespace souschef.server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CookingSessions", x => x.Code);
+                    table.PrimaryKey("PK_LiveSessions", x => x.Code);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,6 +170,25 @@ namespace souschef.server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MealPlans",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MealPlans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MealPlans_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Recipes",
                 columns: table => new
                 {
@@ -193,6 +212,78 @@ namespace souschef.server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MealSessions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    SessionCode = table.Column<string>(type: "text", nullable: true),
+                    ServerIp = table.Column<string>(type: "text", nullable: true),
+                    PlanId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MealSessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MealSessions_MealPlans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "MealPlans",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FavoriteRecipes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "text", nullable: false),
+                    RecipeId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavoriteRecipes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FavoriteRecipes_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FavoriteRecipes_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MealPlanRecipes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MealPlanId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RecipeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MealType = table.Column<string>(type: "text", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MealPlanRecipes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MealPlanRecipes_MealPlans_MealPlanId",
+                        column: x => x.MealPlanId,
+                        principalTable: "MealPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MealPlanRecipes_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tasks",
                 columns: table => new
                 {
@@ -201,27 +292,43 @@ namespace souschef.server.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Duration = table.Column<float>(type: "real", nullable: false),
                     Difficulty = table.Column<int>(type: "integer", nullable: false),
-                    Order = table.Column<int>(type: "integer", nullable: false),
                     Dependencies = table.Column<Guid[]>(type: "uuid[]", nullable: true),
-                    Points = table.Column<int>(type: "integer", nullable: false),
-                    Finished = table.Column<bool>(type: "boolean", nullable: false),
-                    InProgress = table.Column<bool>(type: "boolean", nullable: false),
-                    AssigneeId = table.Column<string>(type: "text", nullable: true),
+                    IsBackground = table.Column<bool>(type: "boolean", nullable: false),
                     RecipeId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_AspNetUsers_AssigneeId",
-                        column: x => x.AssigneeId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Tasks_Recipes_RecipeId",
                         column: x => x.RecipeId,
                         principalTable: "Recipes",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MealSessionUsers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SessionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MealSessionUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MealSessionUsers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MealSessionUsers_MealSessions_SessionId",
+                        column: x => x.SessionId,
+                        principalTable: "MealSessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -313,6 +420,16 @@ namespace souschef.server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_FavoriteRecipes_ApplicationUserId",
+                table: "FavoriteRecipes",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FavoriteRecipes_RecipeId",
+                table: "FavoriteRecipes",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ingredients_RecipeId",
                 table: "Ingredients",
                 column: "RecipeId");
@@ -333,14 +450,39 @@ namespace souschef.server.Migrations
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Recipes_ApplicationUserId",
-                table: "Recipes",
+                name: "IX_MealPlanRecipes_MealPlanId",
+                table: "MealPlanRecipes",
+                column: "MealPlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MealPlanRecipes_RecipeId",
+                table: "MealPlanRecipes",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MealPlans_ApplicationUserId",
+                table: "MealPlans",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_AssigneeId",
-                table: "Tasks",
-                column: "AssigneeId");
+                name: "IX_MealSessions_PlanId",
+                table: "MealSessions",
+                column: "PlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MealSessionUsers_SessionId",
+                table: "MealSessionUsers",
+                column: "SessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MealSessionUsers_UserId",
+                table: "MealSessionUsers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recipes_ApplicationUserId",
+                table: "Recipes",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_RecipeId",
@@ -366,7 +508,7 @@ namespace souschef.server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CookingSessions");
+                name: "FavoriteRecipes");
 
             migrationBuilder.DropTable(
                 name: "Ingredients");
@@ -375,13 +517,28 @@ namespace souschef.server.Migrations
                 name: "Kitchenware");
 
             migrationBuilder.DropTable(
+                name: "LiveSessions");
+
+            migrationBuilder.DropTable(
+                name: "MealPlanRecipes");
+
+            migrationBuilder.DropTable(
+                name: "MealSessionUsers");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
 
             migrationBuilder.DropTable(
+                name: "MealSessions");
+
+            migrationBuilder.DropTable(
                 name: "Recipes");
+
+            migrationBuilder.DropTable(
+                name: "MealPlans");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

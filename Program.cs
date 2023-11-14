@@ -25,7 +25,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<PostGresDBContext>();
 
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
-builder.Services.AddScoped<ICookingSessionRepository, CookingSessionRepository>();
+builder.Services.AddScoped<ILiveSessionRepository, LiveSessionRepository>();
 builder.Services.AddScoped<FavoriteRecipeRepository>();
 builder.Services.AddScoped<MealPlanRepository>();
 builder.Services.AddScoped<MealSessionRepository>();
