@@ -12,14 +12,14 @@ using souschef.server.Data;
 namespace souschef.server.Migrations
 {
     [DbContext(typeof(PostGresDBContext))]
-    [Migration("20231015015020_CookingSession_Updated")]
-    partial class CookingSession_Updated
+    [Migration("20231113081818_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -344,8 +344,8 @@ namespace souschef.server.Migrations
                     b.Property<string>("AssigneeId")
                         .HasColumnType("text");
 
-                    b.Property<int[]>("Dependencies")
-                        .HasColumnType("integer[]");
+                    b.Property<Guid[]>("Dependencies")
+                        .HasColumnType("uuid[]");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");

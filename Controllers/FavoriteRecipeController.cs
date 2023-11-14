@@ -14,81 +14,24 @@ public class FavoriteRecipeController : ControllerBase
         _repository = repository;
     }
 
-    [HttpGet]
-    public ActionResult<IEnumerable<FavoriteRecipeDto>> GetFavoriteRecipes()
-    {
-        var favoriteRecipes = _repository.GetAll();
-        var favoriteRecipeDtos = favoriteRecipes.Select(recipe => new FavoriteRecipeDto
-        {
-            Id = recipe.Id,
-            Name = recipe.Name,
-            Description = recipe.Description,
-            IsFavorite = recipe.IsFavorite
-        }).ToList();
-
-        return Ok(favoriteRecipeDtos);
-    }
-
     [HttpGet("{id}")]
-    public ActionResult<FavoriteRecipeDto> GetFavoriteRecipe(int id)
+    public ActionResult<FavoriteRecipe> GetFavoriteRecipeList(Guid id)
     {
-        var favoriteRecipe = _repository.Get(id);
-        if (favoriteRecipe == null)
-            return NotFound();
-
-        var favoriteRecipeDto = new FavoriteRecipeDto
-        {
-            Id = favoriteRecipe.Id,
-            Name = favoriteRecipe.Name,
-            Description = favoriteRecipe.Description,
-            IsFavorite = favoriteRecipe.IsFavorite
-            // Map other properties here
-        };
-
-        return Ok(favoriteRecipeDto);
+        return Ok(_repository.GetFavoriteRecipes(id));
     }
 
-    [HttpPost]
-    public ActionResult<FavoriteRecipeDto> CreateFavoriteRecipe(FavoriteRecipe model)
+    [HttpPost("{id}/{recipeId}")]
+    public ActionResult<FavoriteRecipe> AddFavoriteRecipe(Guid id, Guid recipeId)
     {
-        var createdRecipe = _repository.Create(model);
-
-        var favoriteRecipeDto = new FavoriteRecipeDto
-        {
-            Id = createdRecipe.Id,
-            Name = createdRecipe.Name,
-            Description = createdRecipe.Description,
-            IsFavorite = createdRecipe.IsFavorite
-            // Map other properties here
-        };
-
-        return CreatedAtAction(nameof(GetFavoriteRecipe), new { id = favoriteRecipeDto.Id }, favoriteRecipeDto);
+        Console.WriteLine(id + " " + recipeId);
+        _repository.AddRecipeToFavorite(id, recipeId);
+        return Ok();
     }
 
-    [HttpPut("{id}")]
-    public IActionResult UpdateFavoriteRecipe(int id, FavoriteRecipe model)
+    [HttpDelete("{id}/{recipeId}")]
+    public ActionResult<FavoriteRecipe> DeleteFavoriteRecipe(Guid id, Guid recipeId)
     {
-        var existingRecipe = _repository.Get(id);
-        if (existingRecipe == null)
-            return NotFound();
-
-        existingRecipe.Name = model.Name;
-        existingRecipe.Description = model.Description;
-        existingRecipe.IsFavorite = model.IsFavorite;
-        // Update other properties as needed
-
-        _repository.Update(existingRecipe);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public IActionResult DeleteFavoriteRecipe(int id)
-    {
-        var favoriteRecipe = _repository.Get(id);
-        if (favoriteRecipe == null)
-            return NotFound();
-
-        _repository.Delete(id);
-        return NoContent();
+        _repository.DeleteRecipeFromFavorite(id, recipeId);
+        return Ok();
     }
 }

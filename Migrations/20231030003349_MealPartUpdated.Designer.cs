@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using souschef.server.Data;
@@ -11,13 +12,14 @@ using souschef.server.Data;
 namespace souschef.server.Migrations
 {
     [DbContext(typeof(PostGresDBContext))]
-    partial class PostGresDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231030003349_MealPartUpdated")]
+    partial class MealPartUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -50,9 +52,6 @@ namespace souschef.server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
 
@@ -61,8 +60,6 @@ namespace souschef.server.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("MealPlans");
                 });
@@ -78,12 +75,6 @@ namespace souschef.server.Migrations
 
                     b.Property<Guid?>("PlanId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("ServerIp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SessionCode")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -378,10 +369,6 @@ namespace souschef.server.Migrations
                     b.Property<Guid>("MealPlanId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("MealType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("Order")
                         .HasColumnType("integer");
 
@@ -462,8 +449,8 @@ namespace souschef.server.Migrations
                     b.Property<string>("AssigneeId")
                         .HasColumnType("text");
 
-                    b.Property<Guid[]>("Dependencies")
-                        .HasColumnType("uuid[]");
+                    b.Property<int[]>("Dependencies")
+                        .HasColumnType("integer[]");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -518,15 +505,6 @@ namespace souschef.server.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("MealPlan", b =>
-                {
-                    b.HasOne("souschef.server.Data.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("MealPlans")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("MealSession", b =>
@@ -682,8 +660,6 @@ namespace souschef.server.Migrations
             modelBuilder.Entity("souschef.server.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("FavoriteRecipes");
-
-                    b.Navigation("MealPlans");
 
                     b.Navigation("Recipes");
                 });
