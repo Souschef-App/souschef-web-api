@@ -75,20 +75,45 @@ namespace souschef.server.Services.SubtaskGeneration
             return uuids.ToArray();
         }
 
+        enum Units
+        {
+            none,
+            ounces,
+            pounds,
+            grams,
+            kilograms,
+            teaspoon,
+            tablespoon,
+            cups,
+            pints,
+            quarts,
+            gallons,
+            mililiters,
+            liters
+        }
+
         List<Data.Models.Ingredient> convertProtoIngredientToIngredient(Google.Protobuf.Collections.RepeatedField<Ingredient> protoIngredients)
         {
             List<Data.Models.Ingredient> ingredients = new();
 
             foreach (var protoIngredient in protoIngredients)
             {
-                var ing = new Data.Models.Ingredient
+                Units unit;
+
+                if (!Enum.TryParse(protoIngredient.Unit, out unit))
                 {
+                    unit = Units.none;
+                }
+
+                var ingredient = new Data.Models.Ingredient
+                {
+                    Id = Guid.NewGuid(),
                     Name = protoIngredient.Name,
                     Quantity = protoIngredient.Quantity,
-                    Unit = 0
+                    Unit = (int)unit
                 };
 
-                ingredients.Add(ing);
+                ingredients.Add(ingredient);
             }
 
             return ingredients;
