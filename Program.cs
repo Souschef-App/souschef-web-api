@@ -5,6 +5,7 @@ using souschef.server.Data.Models;
 using souschef.server.Data.Repository;
 using souschef.server.Data.Repository.Contracts;
 using souschef.server.Helpers;
+using souschef.server.Services.LiveSession;
 using souschef.server.Services.SubtaskGeneration;
 using System.Text.Json.Serialization;
 
@@ -19,7 +20,7 @@ Console.WriteLine(Environment.GetEnvironmentVariable("DB_CONNECTION")!);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<PostGresDBContext>(opt =>
-        opt.UseNpgsql(ConnectionHelper.GetConnectionString("Username=postgres;Password=postgres;Server=localhost;Database=SousChefDB")));
+        opt.UseNpgsql(ConnectionHelper.GetConnectionString("Username=postgres;Password=postgres;Server=db;Database=SousChefDB")));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<PostGresDBContext>();
@@ -31,6 +32,7 @@ builder.Services.AddScoped<MealPlanRepository>();
 builder.Services.AddScoped<MealSessionRepository>();
 
 builder.Services.AddSingleton<ISubTaskGenerationService, SubTaskGenerationService>();
+builder.Services.AddSingleton<ILiveSessionService, LiveSessionService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
