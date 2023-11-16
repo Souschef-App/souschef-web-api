@@ -26,13 +26,13 @@ namespace souschef.server.Helpers
                 {
                     Id = Guid.NewGuid(),
                     Title = _step.Title,
-                    Description = _step.Instructions,
+                    Description = _step.Description,
                     Ingredients = _step.Ingredients.ToList(),
                     Kitchenware = _step.KitchenWare.ToList(),
                     Difficulty = _step.Difficulty,
                     Duration = _step.Duration,
                     Dependencies = null, //_step.Dependencies
-  
+
                 };
 
             }
