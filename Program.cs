@@ -46,6 +46,8 @@ if (app.Environment.IsDevelopment())
     Console.WriteLine("Dev");
     app.UseSwagger();
     app.UseSwaggerUI();
+    var scope = app.Services.CreateScope();
+    await DataHelper.ManageDataAsync(scope.ServiceProvider);
 }
 else
 {

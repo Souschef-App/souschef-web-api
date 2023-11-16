@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using souschef.server.Data.DTOs;
 using souschef.server.Data.Models;
@@ -11,20 +12,21 @@ namespace souschef.server.Controllers
     [Route("api/recipe")]
     public class RecipeController : Controller
     {
-        private readonly IRecipeRepository            m_recipeRepository;
+        private readonly IRecipeRepository m_recipeRepository;
         private readonly UserManager<ApplicationUser> m_userManager;
 
         public RecipeController(IRecipeRepository _recipeRepository, UserManager<ApplicationUser> _userManager)
         {
             m_recipeRepository = _recipeRepository;
-            m_userManager      = _userManager;
+            m_userManager = _userManager;
         }
 
-        [HttpPost()]
-        public IActionResult AddRecipe([FromBody]RecipeDTO _dto)
+        [HttpPost("add-recipe")]
+        public IActionResult AddRecipe([FromBody] RecipeDTO _dto)
         {
-            if(_dto.OwnerId != null && _dto.Tasks != null)
+            if (_dto.OwnerId != null && _dto.Tasks != null)
             {
+
                 var recipe = new Recipe()
                 {
                     Id = Guid.NewGuid(),
@@ -41,7 +43,9 @@ namespace souschef.server.Controllers
 
                 m_recipeRepository.AddRecipe(recipe);
 
-                return Ok();
+                Console.WriteLine("Saved Recipe");
+
+                return Ok("Success");
             }
             else
             {
@@ -79,9 +83,9 @@ namespace souschef.server.Controllers
 
         [HttpGet("public-recipes")]
         public ActionResult<IEnumerable<Recipe>> GetAllRecipes()
-        {   
+        {
             var recipes = m_recipeRepository.GetAll(null);
-            if(recipes != null)
+            if (recipes != null)
             {
                 return Ok(recipes);
             }
@@ -101,7 +105,7 @@ namespace souschef.server.Controllers
 
             var recipes = m_recipeRepository.GetAll(res);
 
-            if(recipes == null)
+            if (recipes == null)
             {
                 return new ContentResult() { Content = "Recipes Not Found", StatusCode = 404 };
             }
