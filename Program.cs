@@ -5,6 +5,7 @@ using souschef.server.Data.Models;
 using souschef.server.Data.Repository;
 using souschef.server.Data.Repository.Contracts;
 using souschef.server.Helpers;
+using souschef.server.Services.LiveSession;
 using souschef.server.Services.SubtaskGeneration;
 using System.Text.Json.Serialization;
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<MealPlanRepository>();
 builder.Services.AddScoped<MealSessionRepository>();
 
 builder.Services.AddSingleton<ISubTaskGenerationService, SubTaskGenerationService>();
+builder.Services.AddSingleton<ILiveSessionService, LiveSessionService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
