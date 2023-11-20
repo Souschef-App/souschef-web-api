@@ -3,6 +3,7 @@ using souschef.server.Data.DTOs;
 using souschef.server.Data.Models;
 using souschef.server.Data.Repository.Contracts;
 using souschef.server.Services.LiveSession;
+using Microsoft.AspNetCore.Identity;
 using System.Diagnostics;
 
 namespace souschef.server.Controllers;
@@ -13,6 +14,8 @@ public class LiveSessionController : Controller
 {
     private readonly ILiveSessionRepository m_liveSessionRepository;
     private readonly ILiveSessionService m_liveSessionService;
+    private readonly MealPlanRepository m_mealPlanRepository;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public LiveSessionController(ILiveSessionRepository _liveSessionRepository, ILiveSessionService _liveSessionService)
     {
@@ -26,8 +29,15 @@ public class LiveSessionController : Controller
     // 3. Add new LiveSession in database
 
     [HttpPost("start-session")]
-    public async Task<IActionResult> StartSession()
+    public async Task<IActionResult> StartSession(string userId)
     {
+        
+        bool userHasMealPlan = m_mealPlanRepository.GetAll().Any(x => x.ApplicationUser != null && x.ApplicationUser.Id.Equals(userId));
+
+        if(userHasMealPlan){
+            
+        }
+
         var ipAddress = await m_liveSessionService.Start();
 
         if (ipAddress != null)
@@ -41,6 +51,7 @@ public class LiveSessionController : Controller
             else
             {
                 // TODO: Stop and remove container b/c database failed
+
             }
         }
 
