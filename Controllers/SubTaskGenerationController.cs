@@ -47,13 +47,15 @@ namespace souschef.server.Controllers
             }
         }
 
-        [HttpPost("requestone")]
-        public async Task<ActionResult<IEnumerable<Recipe>>> RequestSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
+        [HttpPost("retry-task")]
+        public async Task<ActionResult<Data.Models.Task>> RequestSubTaskRegeneration([FromBody] RetryTaskDTO _dto)
         {
-            if (_dto.Recipe == null)
-                return new ContentResult() { Content = "Recipe can't be null", StatusCode = 500 };
+            Console.WriteLine("retry-task " + _dto);
+            if (_dto.Prompt == null || _dto.Task == null)
+                return new ContentResult() { Content = "Prompt or Task cannot be null", StatusCode = 402 };
 
-            var subtask = await m_SubTaskGenerationService.RequestRegenerationOfSubTask(_dto.Recipe, "00");
+
+            var subtask = await m_SubTaskGenerationService.RequestRegenerationOfSubTask(_dto.Prompt, _dto.Task);
             if (subtask != null)
             {
                 return Ok(subtask);
@@ -64,7 +66,7 @@ namespace souschef.server.Controllers
             }
         }
 
-        [HttpPost("requestall")]
+        [HttpPost("retry-all")]
         public async Task<ActionResult<IEnumerable<Recipe>>> RequestAllSubTaskRegeneration([FromBody] BreakDownRequestDTO _dto)
         {
             if (_dto.Recipe == null)

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Reflection.Metadata;
 using Grpc.Net.Client;
-using Microsoft.Extensions.ObjectPool;
+using souschef.server.Data.DTOs;
 
 namespace souschef.server.Services.SubtaskGeneration
 {
@@ -11,7 +10,6 @@ namespace souschef.server.Services.SubtaskGeneration
         public SubTaskGenerationService()
         {
             Debug.WriteLine("SubTaskGenerationService");
-
             Debug.WriteLine("CREATING CHANNEL");
         }
 
@@ -127,9 +125,65 @@ namespace souschef.server.Services.SubtaskGeneration
             return kitchenware;
         }
 
-        public async Task<string> RequestRegenerationOfSubTask(string subTask, string ID)
+        public async Task<Data.Models.Task> RequestRegenerationOfSubTask(string prompt, TaskDTO dtoTask)
         {
-            return "";
+            if (dtoTask.Ingredients == null || dtoTask.KitchenWare == null)
+                throw new Exception("INgredients NULL");
+
+            using var channel = GrpcChannel.ForAddress("http://ai:50051");
+            var client = new RecipeGeneration.RecipeGenerationClient(channel);
+
+            Task task = new()
+            {
+                Title = dtoTask.Title,
+                Description = dtoTask.Description,
+                Difficulty = dtoTask.Difficulty,
+                Duration = (int)dtoTask.Duration,
+            };
+
+            foreach (var ingredient in dtoTask.Ingredients)
+            {
+
+                Ingredient ing = new()
+                {
+                    Name = ingredient.Name,
+                    Quantity = ingredient.Quantity,
+                    Unit = ingredient.Unit.ToString()
+                };
+
+                task.Ingredients.Add(ing);
+            }
+
+            foreach (var kitchenware in dtoTask.KitchenWare)
+            {
+
+                Kitchenware ware = new()
+                {
+                    Name = kitchenware.Name,
+                    Quantity = kitchenware.Quantity,
+                };
+
+                task.Kitchenware.Add(ware);
+            }
+
+            Console.WriteLine("task " + task);
+
+            var reply = await client.retryTaskAsync(new RetryTaskRequest { Prompt = prompt, Task = task });
+
+            var returnTask = new Data.Models.Task
+            {
+                Id = new Guid(reply.Task.Uuid.ToByteArray()),
+                Title = reply.Task.Title,
+                Description = reply.Task.Description,
+                Duration = 0,
+                Difficulty = reply.Task.Difficulty,
+                Dependencies = GetGUIDArrayFromByteString(reply.Task.Dependencies),
+                Ingredients = convertProtoIngredientToIngredient(reply.Task.Ingredients),
+                Kitchenware = convertProtoKitchenwareToKitchenware(reply.Task.Kitchenware)
+            };
+
+            return returnTask;
+
         }
 
         public async Task<string> RequestRegenerationOfAllSubTask(string subTasks, string ID)
