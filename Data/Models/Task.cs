@@ -19,7 +19,7 @@ namespace souschef.server.Data.Models
         public int Difficulty { get; set; }
 
         // public int Order { get; set; }
-        public Guid[]? Dependencies { get; set; }
+        public Dependency[]? Dependencies { get; set; }
         public bool IsBackground { get; set; }
 
         // public int Points { get; set; }

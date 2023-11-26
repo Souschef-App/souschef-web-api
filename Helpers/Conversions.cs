@@ -45,5 +45,71 @@ namespace souschef.server.Helpers
             return ((DateTimeOffset)_dateTime).ToUnixTimeSeconds();
         }
 
+        #region GRPC Conversions
+
+        public static List<Ingredient> ConvertProtoIngredientToIngredient(Google.Protobuf.Collections.RepeatedField<Services.SubtaskGeneration.Ingredient> protoIngredients)
+        {
+            List<Ingredient> ingredients = new();
+
+            foreach (var protoIngredient in protoIngredients)
+            {
+                Services.SubtaskGeneration.SubTaskGenerationService.Units unit;
+
+                if (!Enum.TryParse(protoIngredient.Unit, out unit))
+                {
+                    unit = Services.SubtaskGeneration.SubTaskGenerationService.Units.none;
+                }
+
+                var ingredient = new Ingredient
+                {
+                    Id = Guid.NewGuid(),
+                    Name = protoIngredient.Name,
+                    Quantity = protoIngredient.Quantity,
+                    Unit = (int)unit
+                };
+
+                ingredients.Add(ingredient);
+            }
+
+            return ingredients;
+        }
+
+        public static List<Kitchenware> ConvertProtoKitchenwareToKitchenware(Google.Protobuf.Collections.RepeatedField<Services.SubtaskGeneration.Kitchenware> protoKitchenware)
+        {
+            List<Kitchenware> kitchenware = new();
+
+            foreach (var protoKitchenItem in protoKitchenware)
+            {
+                var kitchenItem = new Kitchenware
+                {
+                    Name = protoKitchenItem.Name,
+                    Quantity = protoKitchenItem.Quantity,
+                };
+
+                kitchenware.Add(kitchenItem);
+            }
+
+            return kitchenware;
+        }
+
+        public static Dependency[] ConvertProtoDependencyListtoDependencyArray(Google.Protobuf.Collections.RepeatedField<Services.SubtaskGeneration.Dependency> dependencies)
+        {
+            List<Dependency> deps = new();
+            foreach (var dep in dependencies)
+            {
+                Dependency newDep = new()
+                {
+                    Title = dep.Name,
+                    ID = new Guid(dep.UUID.ToByteArray()),
+                };
+
+                deps.Add(newDep);
+            }
+
+            return deps.ToArray();
+        }
+
+        #endregion
+
     }
 }

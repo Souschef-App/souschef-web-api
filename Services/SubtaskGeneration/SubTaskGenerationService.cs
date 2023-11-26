@@ -38,9 +38,9 @@ namespace souschef.server.Services.SubtaskGeneration
                     Description = reply.Tasks[i].Description,
                     Duration = 0,
                     Difficulty = reply.Tasks[i].Difficulty,
-                    Dependencies = GetGUIDArrayFromByteString(reply.Tasks[i].Dependencies),
-                    Ingredients = convertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
-                    Kitchenware = convertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
+                    Dependencies = Helpers.Conversions.ConvertProtoDependencyListtoDependencyArray(reply.Tasks[i].Dependencies),
+                    Ingredients = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
+                    Kitchenware = Helpers.Conversions.ConvertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
                 };
 
                 Console.WriteLine("Id " + task.Id);
@@ -52,18 +52,24 @@ namespace souschef.server.Services.SubtaskGeneration
             return tasks;
         }
 
-        static Guid[] GetGUIDArrayFromByteString(Google.Protobuf.Collections.RepeatedField<Google.Protobuf.ByteString> bytesStrings)
-        {
-            List<Guid> uuids = new();
-            foreach (var bytesString in bytesStrings)
-            {
-                uuids.Add(new Guid(bytesString.ToByteArray()));
-            }
+        //static Data.Models.Dependency[] ConvertProtoDependencyListtoDependencyArray(Google.Protobuf.Collections.RepeatedField<Dependency> dependencies)
+        //{
+        //    List<Data.Models.Dependency> deps = new();
+        //    foreach (var dep in dependencies)
+        //    {
+        //        Data.Models.Dependency newDep = new Data.Models.Dependency()
+        //        {
+        //            Title = dep.Name,
+        //            ID = new Guid(dep.UUID.ToByteArray()),
+        //        };
 
-            return uuids.ToArray();
-        }
+        //        deps.Add(newDep);
+        //    }
 
-        enum Units
+        //    return deps.ToArray();
+        //}
+
+        public enum Units
         {
             none,
             ounces,
@@ -80,50 +86,50 @@ namespace souschef.server.Services.SubtaskGeneration
             liters
         }
 
-        List<Data.Models.Ingredient> convertProtoIngredientToIngredient(Google.Protobuf.Collections.RepeatedField<Ingredient> protoIngredients)
-        {
-            List<Data.Models.Ingredient> ingredients = new();
+        //static List<Data.Models.Ingredient> ConvertProtoIngredientToIngredient(Google.Protobuf.Collections.RepeatedField<Ingredient> protoIngredients)
+        //{
+        //    List<Data.Models.Ingredient> ingredients = new();
 
-            foreach (var protoIngredient in protoIngredients)
-            {
-                Units unit;
+        //    foreach (var protoIngredient in protoIngredients)
+        //    {
+        //        Units unit;
 
-                if (!Enum.TryParse(protoIngredient.Unit, out unit))
-                {
-                    unit = Units.none;
-                }
+        //        if (!Enum.TryParse(protoIngredient.Unit, out unit))
+        //        {
+        //            unit = Units.none;
+        //        }
 
-                var ingredient = new Data.Models.Ingredient
-                {
-                    Id = Guid.NewGuid(),
-                    Name = protoIngredient.Name,
-                    Quantity = protoIngredient.Quantity,
-                    Unit = (int)unit
-                };
+        //        var ingredient = new Data.Models.Ingredient
+        //        {
+        //            Id = Guid.NewGuid(),
+        //            Name = protoIngredient.Name,
+        //            Quantity = protoIngredient.Quantity,
+        //            Unit = (int)unit
+        //        };
 
-                ingredients.Add(ingredient);
-            }
+        //        ingredients.Add(ingredient);
+        //    }
 
-            return ingredients;
-        }
+        //    return ingredients;
+        //}
 
-        List<Data.Models.Kitchenware> convertProtoKitchenwareToKitchenware(Google.Protobuf.Collections.RepeatedField<Kitchenware> protoKitchenware)
-        {
-            List<Data.Models.Kitchenware> kitchenware = new();
+        //static List<Data.Models.Kitchenware> ConvertProtoKitchenwareToKitchenware(Google.Protobuf.Collections.RepeatedField<Kitchenware> protoKitchenware)
+        //{
+        //    List<Data.Models.Kitchenware> kitchenware = new();
 
-            foreach (var protoKitchenItem in protoKitchenware)
-            {
-                var kitchenItem = new Data.Models.Kitchenware
-                {
-                    Name = protoKitchenItem.Name,
-                    Quantity = protoKitchenItem.Quantity,
-                };
+        //    foreach (var protoKitchenItem in protoKitchenware)
+        //    {
+        //        var kitchenItem = new Data.Models.Kitchenware
+        //        {
+        //            Name = protoKitchenItem.Name,
+        //            Quantity = protoKitchenItem.Quantity,
+        //        };
 
-                kitchenware.Add(kitchenItem);
-            }
+        //        kitchenware.Add(kitchenItem);
+        //    }
 
-            return kitchenware;
-        }
+        //    return kitchenware;
+        //}
 
         public async Task<Data.Models.Task> RequestRegenerationOfSubTask(string prompt, TaskDTO dtoTask)
         {
@@ -177,9 +183,9 @@ namespace souschef.server.Services.SubtaskGeneration
                 Description = reply.Task.Description,
                 Duration = 0,
                 Difficulty = reply.Task.Difficulty,
-                Dependencies = GetGUIDArrayFromByteString(reply.Task.Dependencies),
-                Ingredients = convertProtoIngredientToIngredient(reply.Task.Ingredients),
-                Kitchenware = convertProtoKitchenwareToKitchenware(reply.Task.Kitchenware)
+                Dependencies = Helpers.Conversions.ConvertProtoDependencyListtoDependencyArray(reply.Task.Dependencies),
+                Ingredients = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Task.Ingredients),
+                Kitchenware = Helpers.Conversions.ConvertProtoKitchenwareToKitchenware(reply.Task.Kitchenware)
             };
 
             return returnTask;
