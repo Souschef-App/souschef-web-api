@@ -39,8 +39,8 @@ namespace souschef.server.Services.SubtaskGeneration
                     Duration = reply.Tasks[i].Duration,
                     Difficulty = reply.Tasks[i].Difficulty,
                     Dependencies = Helpers.Conversions.ConvertProtoDependencyListtoDependencyArray(reply.Tasks[i].Dependencies),
-                    Ingredients  = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
-                    Kitchenware  = Helpers.Conversions.ConvertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
+                    Ingredients = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
+                    Kitchenware = Helpers.Conversions.ConvertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
                 };
 
                 Console.WriteLine("Id " + task.Id);
@@ -51,23 +51,6 @@ namespace souschef.server.Services.SubtaskGeneration
 
             return tasks;
         }
-
-        //static Data.Models.Dependency[] ConvertProtoDependencyListtoDependencyArray(Google.Protobuf.Collections.RepeatedField<Dependency> dependencies)
-        //{
-        //    List<Data.Models.Dependency> deps = new();
-        //    foreach (var dep in dependencies)
-        //    {
-        //        Data.Models.Dependency newDep = new Data.Models.Dependency()
-        //        {
-        //            Title = dep.Name,
-        //            ID = new Guid(dep.UUID.ToByteArray()),
-        //        };
-
-        //        deps.Add(newDep);
-        //    }
-
-        //    return deps.ToArray();
-        //}
 
         public enum Units
         {
@@ -85,51 +68,6 @@ namespace souschef.server.Services.SubtaskGeneration
             mililiters,
             liters
         }
-
-        //static List<Data.Models.Ingredient> ConvertProtoIngredientToIngredient(Google.Protobuf.Collections.RepeatedField<Ingredient> protoIngredients)
-        //{
-        //    List<Data.Models.Ingredient> ingredients = new();
-
-        //    foreach (var protoIngredient in protoIngredients)
-        //    {
-        //        Units unit;
-
-        //        if (!Enum.TryParse(protoIngredient.Unit, out unit))
-        //        {
-        //            unit = Units.none;
-        //        }
-
-        //        var ingredient = new Data.Models.Ingredient
-        //        {
-        //            Id = Guid.NewGuid(),
-        //            Name = protoIngredient.Name,
-        //            Quantity = protoIngredient.Quantity,
-        //            Unit = (int)unit
-        //        };
-
-        //        ingredients.Add(ingredient);
-        //    }
-
-        //    return ingredients;
-        //}
-
-        //static List<Data.Models.Kitchenware> ConvertProtoKitchenwareToKitchenware(Google.Protobuf.Collections.RepeatedField<Kitchenware> protoKitchenware)
-        //{
-        //    List<Data.Models.Kitchenware> kitchenware = new();
-
-        //    foreach (var protoKitchenItem in protoKitchenware)
-        //    {
-        //        var kitchenItem = new Data.Models.Kitchenware
-        //        {
-        //            Name = protoKitchenItem.Name,
-        //            Quantity = protoKitchenItem.Quantity,
-        //        };
-
-        //        kitchenware.Add(kitchenItem);
-        //    }
-
-        //    return kitchenware;
-        //}
 
         public async Task<Data.Models.Task> RequestRegenerationOfSubTask(string prompt, TaskDTO dtoTask)
         {
