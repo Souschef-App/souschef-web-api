@@ -8,7 +8,7 @@ namespace souschef.server.Data.Models
         [Key]  
         public Guid     Id       { get; set; }
         public string?  Name     { get; set;}
-        public float    Quantity { get; set;}
+        public Fraction? Quantity { get; set;}
 
         //None,
         //Ounces,     // Start of weight units

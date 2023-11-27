@@ -36,11 +36,11 @@ namespace souschef.server.Services.SubtaskGeneration
                     Id = new Guid(reply.Tasks[i].Uuid.ToByteArray()),
                     Title = reply.Tasks[i].Title,
                     Description = reply.Tasks[i].Description,
-                    Duration = 0,
+                    Duration = reply.Tasks[i].Duration,
                     Difficulty = reply.Tasks[i].Difficulty,
                     Dependencies = Helpers.Conversions.ConvertProtoDependencyListtoDependencyArray(reply.Tasks[i].Dependencies),
-                    Ingredients = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
-                    Kitchenware = Helpers.Conversions.ConvertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
+                    Ingredients  = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Tasks[i].Ingredients),
+                    Kitchenware  = Helpers.Conversions.ConvertProtoKitchenwareToKitchenware(reply.Tasks[i].Kitchenware)
                 };
 
                 Console.WriteLine("Id " + task.Id);
@@ -134,7 +134,7 @@ namespace souschef.server.Services.SubtaskGeneration
         public async Task<Data.Models.Task> RequestRegenerationOfSubTask(string prompt, TaskDTO dtoTask)
         {
             if (dtoTask.Ingredients == null || dtoTask.KitchenWare == null)
-                throw new Exception("INgredients NULL");
+                throw new Exception("Ingredients NULL");
 
             using var channel = GrpcChannel.ForAddress("http://ai:50051");
             var client = new RecipeGeneration.RecipeGenerationClient(channel);
@@ -149,11 +149,17 @@ namespace souschef.server.Services.SubtaskGeneration
 
             foreach (var ingredient in dtoTask.Ingredients)
             {
+                Fraction q = new()
+                {
+                    Whole = ingredient!.Quantity!.Whole,
+                    Numerator = ingredient!.Quantity!.Numerator,
+                    Denominator = ingredient!.Quantity!.Denominator,
+                };
 
                 Ingredient ing = new()
                 {
                     Name = ingredient.Name,
-                    Quantity = ingredient.Quantity,
+                    Quantity = q,
                     Unit = ingredient.Unit.ToString()
                 };
 
@@ -181,7 +187,7 @@ namespace souschef.server.Services.SubtaskGeneration
                 Id = new Guid(reply.Task.Uuid.ToByteArray()),
                 Title = reply.Task.Title,
                 Description = reply.Task.Description,
-                Duration = 0,
+                Duration = reply.Task.Duration,
                 Difficulty = reply.Task.Difficulty,
                 Dependencies = Helpers.Conversions.ConvertProtoDependencyListtoDependencyArray(reply.Task.Dependencies),
                 Ingredients = Helpers.Conversions.ConvertProtoIngredientToIngredient(reply.Task.Ingredients),

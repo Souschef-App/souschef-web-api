@@ -31,7 +31,7 @@ namespace souschef.server.Helpers
                     Kitchenware = _step.KitchenWare.ToList(),
                     Difficulty = _step.Difficulty,
                     Duration = _step.Duration,
-                    Dependencies = null, //_step.Dependencies
+                    Dependencies = _step.Dependencies
 
                 };
 
@@ -53,18 +53,25 @@ namespace souschef.server.Helpers
 
             foreach (var protoIngredient in protoIngredients)
             {
-                Services.SubtaskGeneration.SubTaskGenerationService.Units unit;
 
-                if (!Enum.TryParse(protoIngredient.Unit, out unit))
+                if (!Enum.TryParse(protoIngredient.Unit, out Services.SubtaskGeneration.SubTaskGenerationService.Units unit))
                 {
                     unit = Services.SubtaskGeneration.SubTaskGenerationService.Units.none;
                 }
+
+                Fraction q = new()
+                {
+                    Id = Guid.NewGuid(),
+                    Whole = protoIngredient.Quantity.Whole,
+                    Numerator = protoIngredient.Quantity.Numerator,
+                    Denominator = protoIngredient.Quantity.Denominator,
+                };
 
                 var ingredient = new Ingredient
                 {
                     Id = Guid.NewGuid(),
                     Name = protoIngredient.Name,
-                    Quantity = protoIngredient.Quantity,
+                    Quantity = q,
                     Unit = (int)unit
                 };
 
