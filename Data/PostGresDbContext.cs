@@ -24,4 +24,6 @@ public class PostGresDBContext : IdentityDbContext<ApplicationUser>
     public DbSet<MealPlan>? MealPlans { get; set;}
     public DbSet<MealSession>? MealSessions { get; set;}
     public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; }
+
+    public DbSet<Fraction> Quantities { get; set; }
 }

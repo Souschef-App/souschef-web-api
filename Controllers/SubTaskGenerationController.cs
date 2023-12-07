@@ -50,12 +50,13 @@ namespace souschef.server.Controllers
         [HttpPost("retry-task")]
         public async Task<ActionResult<Data.Models.Task>> RequestSubTaskRegeneration([FromBody] RetryTaskDTO _dto)
         {
-            Console.WriteLine("retry-task " + _dto);
+            Console.WriteLine("retry-task " + _dto.ToString());
             if (_dto.Prompt == null || _dto.Task == null)
                 return new ContentResult() { Content = "Prompt or Task cannot be null", StatusCode = 402 };
 
 
             var subtask = await m_SubTaskGenerationService.RequestRegenerationOfSubTask(_dto.Prompt, _dto.Task);
+            Console.WriteLine("retry-task subtask" + subtask.ToString());
             if (subtask != null)
             {
                 return Ok(subtask);
