@@ -2,67 +2,66 @@
 using Microsoft.EntityFrameworkCore;
 using souschef.server.Data;
 using souschef.server.Data.Models;
-using souschef.server.Data.Repository;
 
 public class MealPlanRepository
 {
     private readonly PostGresDBContext _context;
-    public IEnumerable<MealPlan>? MealPlans => _context.MealPlans.Include(c => c.Recipes).ThenInclude(x => x.Recipe);
+    public IEnumerable<MealPlan>? MealPlans => _context.MealPlans?.Include(m => m.Recipes).Include(m => m.ApplicationUser);
 
     public MealPlanRepository(PostGresDBContext context) { _context = context; }
 
-    public MealPlan Create(MealPlan mealPlan)
+    public bool Create(string name, DateTime dateTime, ApplicationUser user)
     {
-        var res = _context.MealPlans.Add(mealPlan);
-        _context.SaveChanges();
-        return res.Entity;
-    }
+        try
+        {
+            var mealPlan = new MealPlan { 
+                Name = name, 
+                Date = dateTime, 
+                ApplicationUser = user, 
+            };
 
-    public MealPlan? Get(Guid id)
-    {
-        return MealPlans.FirstOrDefault(c => c.Id == id);
+            _context.AddAsync(mealPlan);
+            _context.SaveChanges();
+
+            return true;
+        } 
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public IEnumerable<MealPlan> GetAll()
     {
-        return MealPlans;
+        return MealPlans?.ToList() ?? new List<MealPlan>();
     }
 
-    public void Update(MealPlan mealPlan)
+    public bool DeleteById(Guid id)
     {
-        _context.MealPlans.Update(mealPlan);
-        _context.SaveChanges();
+        var mealplan = _context.MealPlans?.First(mealplan => mealplan.Id == id);
+
+        if (mealplan != null)
+        {
+            _context.MealPlans?.Remove(mealplan);
+            _context.SaveChanges();
+            return true;
+        }
+
+        return false;
     }
 
-    public void Delete(Guid id)
+    public bool AddRecipeToMealplanByID(Guid mealplanID, Guid recipeID)
     {
-        _context.MealPlans.Remove(Get(id));
-        _context.SaveChanges();
-    }
+        var mealplan = MealPlans?.First(mealplan => mealplan.Id == mealplanID);
+        var recipe = _context.Recipes?.First(recipe => recipe.Id == recipeID);
 
-    public IEnumerable<MealPlanRecipe> GetMealPlanRecipes(Guid id)
-    {
-        return MealPlans.FirstOrDefault(c => c.Id == id).Recipes;
-    }
+        if (mealplan != null && recipe != null)
+        {
+            mealplan.Recipes.Add(recipe);
+            _context.SaveChanges();
+            return true;
+        }
 
-    public void AddRecipeToMealPlan(Guid id, string type, Guid recipeId)
-    {
-        MealPlan mealPlan = Get(id);
-        MealPlanRecipe mealPlanRecipe = new MealPlanRecipe();
-        mealPlanRecipe.Recipe = _context.Recipes.FirstOrDefault(c => c.Id == recipeId);
-        mealPlanRecipe.MealType = type;
-        mealPlanRecipe.Order = 0;
-        mealPlanRecipe.MealPlan = mealPlan;
-
-        _context.MealPlanRecipes.Add(mealPlanRecipe);
-        _context.SaveChanges();
-    }
-
-    public void DeleteRecipeFromMealPlan(Guid id, Guid recipeId)
-    {
-        MealPlan mealPlan = Get(id);
-        MealPlanRecipe mealPlanRecipe = mealPlan.Recipes.Find(c => c.Id.Equals(recipeId));
-        _context.MealPlanRecipes.Remove(mealPlanRecipe);
-        _context.SaveChanges();
+        return false;
     }
 }

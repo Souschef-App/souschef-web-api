@@ -1,4 +1,4 @@
-// Repositories/FavoriteRecipeRepository.cs
+/*// Repositories/FavoriteRecipeRepository.cs
 
 using souschef.server.Data;
 using souschef.server.Data.Models;
@@ -36,3 +36,4 @@ public class FavoriteRecipeRepository
         _context.SaveChanges();
     }
 }
+*/

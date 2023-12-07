@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using souschef.server.Data.DTOs;
 using souschef.server.Data.Models;
@@ -9,65 +10,82 @@ using System.Linq;
 [ApiController]
 public class MealPlanController : ControllerBase
 {
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly MealPlanRepository _repository;
 
-    public MealPlanController(MealPlanRepository repository)
+    public MealPlanController(UserManager<ApplicationUser> userManager, MealPlanRepository repository)
     {
+        _userManager = userManager;
         _repository = repository;
     }
 
-    [HttpGet]
-    public ActionResult<IEnumerable<MealPlanDto>> GetMealPlans()
+    [HttpGet("get-all")]
+    public ActionResult<IEnumerable<MealPlanDTO>> GetAllMealPlans()
     {
         var mealPlans = _repository.GetAll();
-        var mealPlanDtos = mealPlans.Select(plan => new MealPlanDto
+        var mealPlanDTOs = mealPlans.Select(mealplan => new MealPlanDTO
         {
-            Id = plan.Id,
-            Date = plan.Date,
-            // Map other properties here
-            Name = plan.Name,
-            Recipes = plan.Recipes.ToArray()
-        }).ToList();
+            Id = mealplan.Id.ToString(),
+            Name = mealplan.Name,
+            Date = mealplan.Date.Ticks,
+            Recipes = mealplan.Recipes.ToArray(),
+            HostId = mealplan?.ApplicationUser?.Id?.ToString() ?? ""
+        });
 
-        return Ok(mealPlanDtos);
+        return Ok(mealPlanDTOs);
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<MealPlanDto> GetMealPlan(Guid id)
+    [HttpPost("create")]
+    public async Task<bool> CreateMealPlan([FromBody] MealPlanCreateDTO mealplanCreateDTO)
     {
-        var mealPlan = _repository.Get(id);
-        if (mealPlan == null)
-            return NotFound();
+        // Get ApplicationUser from ID
+        ApplicationUser user = await _userManager.FindByIdAsync(mealplanCreateDTO.OwnerID);
 
-        var mealPlanDto = new MealPlanDto
+        if (user != null)
         {
-            Id = mealPlan.Id,
-            Date = mealPlan.Date,
-            // Map other properties here,
-            Name = mealPlan.Name,
-            Recipes = mealPlan.Recipes.ToArray()
-        };
+            var name = mealplanCreateDTO.Name;
+            var date = new DateTime(mealplanCreateDTO.Date);
+            return _repository.Create(name, date, user);
+        }
 
-        return Ok(mealPlanDto);
+        return false;
     }
 
-    [HttpPost]
-    public ActionResult<MealPlanDto> CreateMealPlan(MealPlan model)
+    [HttpPost("delete")]
+    public IActionResult DeleteMealPlan([FromQuery] string id)
     {
-        // You can perform validation here if needed
-        var createdMealPlan = _repository.Create(model);
+        var success = _repository.DeleteById(new Guid(id));
 
-        var mealPlanDto = new MealPlanDto
+        if (success)
         {
-            Id = createdMealPlan.Id,
-            Name = createdMealPlan.Name,
-            Date = createdMealPlan.Date
-        };
+            return Ok();
+        }
 
-        return CreatedAtAction(nameof(GetMealPlan), new { id = mealPlanDto.Id }, mealPlanDto);
+        return new ContentResult
+        {
+            StatusCode = 400,
+            Content = "Failed to delete mealplan"
+        };
     }
 
-    [HttpPut("{id}")]
+    [HttpPost("add-recipe")]
+    public IActionResult AddRecipeToMealPlan([FromQuery] string mealplanID, [FromQuery] string recipeID)
+    {
+        var success = _repository.AddRecipeToMealplanByID(new Guid(mealplanID), new Guid(recipeID));
+
+        if (success)
+        {
+            return Ok();
+        }
+
+        return new ContentResult
+        {
+            StatusCode = 400,
+            Content = "Failed to add recipe to mealplan"
+        };
+    }
+
+    /*[HttpPut("{id}")]
     public IActionResult UpdateMealPlan(Guid id, MealPlan model)
     {
         var existingMealPlan = _repository.Get(id);
@@ -124,5 +142,5 @@ public class MealPlanController : ControllerBase
             return NotFound();
         _repository.DeleteRecipeFromMealPlan(id, recipeId);
         return Ok();
-    }
+    }*/
 }

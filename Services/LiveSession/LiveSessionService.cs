@@ -7,7 +7,7 @@ namespace souschef.server.Services.LiveSession
     {
         readonly string imageName = "souschef-live-session";
         readonly string containerName = "souschef-live-session";
-        readonly string staticLocalIP = "";
+        readonly string staticLocalIP = "192.168.0.244:8080";
 
         private async Task<bool> ImageExist(IDockerClient client, string imageName)
         {
