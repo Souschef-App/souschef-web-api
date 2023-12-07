@@ -27,9 +27,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
 
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<ILiveSessionRepository, LiveSessionRepository>();
-builder.Services.AddScoped<FavoriteRecipeRepository>();
 builder.Services.AddScoped<MealPlanRepository>();
-builder.Services.AddScoped<MealSessionRepository>();
 
 builder.Services.AddSingleton<ISubTaskGenerationService, SubTaskGenerationService>();
 builder.Services.AddSingleton<ILiveSessionService, LiveSessionService>();

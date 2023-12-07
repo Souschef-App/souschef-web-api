@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using souschef.server.Data.DTOs;
 using souschef.server.Data.Models;
 using souschef.server.Data.Repository.Contracts;
 using souschef.server.Services.LiveSession;
 using System.Diagnostics;
+using System.Net.WebSockets;
+using System.Security.Principal;
+using System.Text;
+using Task = System.Threading.Tasks.Task;
 
 namespace souschef.server.Controllers;
 
@@ -13,17 +18,24 @@ public class LiveSessionController : Controller
 {
     private readonly ILiveSessionRepository m_liveSessionRepository;
     private readonly ILiveSessionService m_liveSessionService;
+    private readonly MealPlanRepository m_mealPlanRepository;
 
-    public LiveSessionController(ILiveSessionRepository _liveSessionRepository, ILiveSessionService _liveSessionService)
+    public LiveSessionController(ILiveSessionRepository _liveSessionRepository, ILiveSessionService _liveSessionService, MealPlanRepository mealPlanRepository)
     {
         m_liveSessionRepository = _liveSessionRepository;
         m_liveSessionService = _liveSessionService;
+        m_mealPlanRepository = mealPlanRepository;
     }
 
-    // TODO: Start live sessions by providing user and mealplan ID
-    // 1. Validate that user has mealplan ID registered
-    // 2. Create instance of WebSocker server
-    // 3. Add new LiveSession in database
+    async Task SendMessage(ClientWebSocket webSocket, ClientMessageDTO message)
+    {
+        string jsonMessage = JsonConvert.SerializeObject(message);
+        byte[] buffer = Encoding.UTF8.GetBytes(jsonMessage);
+
+        await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+
+        Console.WriteLine($"Sent: {jsonMessage}");
+    }
 
     [HttpPost("start-session")]
     public async Task<IActionResult> StartSession()
@@ -32,6 +44,57 @@ public class LiveSessionController : Controller
 
         if (ipAddress != null)
         {
+            string webSocketURL = $"ws://{ipAddress}/ws";
+            
+            // Default mealplan
+            var mealplans = m_mealPlanRepository.GetAll().ToList();
+            if (mealplans.Count == 0)
+            {
+                throw new Exception("Default Mealplan doesn't exist!");
+            }
+
+            MealPlan defaultMealplan = mealplans[0];
+            MealPlanDTO mealPlan = new MealPlanDTO { 
+                Id = defaultMealplan.Id.ToString(),
+                Name = defaultMealplan.Name,
+                Date = defaultMealplan.Date.Ticks,
+                HostId = defaultMealplan?.ApplicationUser?.Id?.ToString() ?? "",
+                Recipes = defaultMealplan?.Recipes.ToArray() ?? new Recipe[0],
+                OccasionType = 0,
+            };
+
+            using (ClientWebSocket webSocket = new())
+            {
+                try
+                {
+                    Console.WriteLine($"Connecting to {webSocketURL}...");
+
+                    await webSocket.ConnectAsync(new Uri(webSocketURL), CancellationToken.None);
+
+                    Console.WriteLine("Connected!");
+
+                    var message = new ClientMessageDTO
+                    {
+                        Type = "session_create",
+                        Payload = mealPlan
+                    };
+
+                    await SendMessage(webSocket, message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+                finally
+                {
+                    if (webSocket.State == WebSocketState.Open)
+                    {
+                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+                    }
+                }
+            }
+            
+
             var session = m_liveSessionRepository.CreateSession(ipAddress);
 
             if (session != null)
@@ -56,7 +119,7 @@ public class LiveSessionController : Controller
     // - Make LiveSessionDTO that doesn't include dockerID
 
     [HttpPost("stop-session")]
-    public async Task<IActionResult> StopSession([FromQuery] int code)
+    public IActionResult StopSession([FromQuery] int code)
     {
         var success = m_liveSessionRepository.DeleteSessionByCode(code);
 

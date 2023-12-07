@@ -1,4 +1,4 @@
-// Repositories/SessionRepository.cs
+/*// Repositories/SessionRepository.cs
 
 using Microsoft.EntityFrameworkCore;
 using souschef.server.Data;
@@ -83,3 +83,4 @@ public class MealSessionRepository
         _context.SaveChanges();
     }
 }
+*/

@@ -7,10 +7,7 @@ public class MealPlan
     [Key]
     public Guid Id { get; set; }
     public DateTime Date { get; set; }
-
     public string Name { get; set; }
-
-    public List<MealPlanRecipe>? Recipes { get; set; }
+    public List<Recipe> Recipes { get; set; } = new List<Recipe>();
     public ApplicationUser? ApplicationUser { get; set; }
-    //public bool IsFavorite { get; set; } // New property for indicating if it's a favorite
 }
