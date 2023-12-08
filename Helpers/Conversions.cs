@@ -20,24 +20,34 @@ namespace souschef.server.Helpers
 
         public static Data.Models.Task? ToTask(TaskDTO _step)
         {
-            if (_step.Ingredients != null && _step.KitchenWare != null)
+            if (_step.Id != null && _step.Ingredients != null && _step.KitchenWare != null)
             {
                 return new Data.Models.Task
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse(_step.Id.ToString()!),
                     Title = _step.Title,
                     Description = _step.Description,
                     Ingredients = _step.Ingredients.ToList(),
                     Kitchenware = _step.KitchenWare.ToList(),
                     Difficulty = _step.Difficulty,
                     Duration = _step.Duration,
-                    Dependencies = _step.Dependencies
+                    Dependencies = _step.Dependencies != null ? Array.ConvertAll(_step.Dependencies, new Converter<DependencyDTO, Dependency>(delegate (DependencyDTO x) { return ToDependency(x)!; })).ToList() : null,
 
                 };
 
             }
 
             return null;
+        }
+
+        public static Dependency ToDependency(DependencyDTO _dep)
+        {
+            return new Dependency
+            {
+                ID = Guid.Parse(_dep.ID!),
+                DependencyID = Guid.Parse(_dep.DependencyID!),
+                Title = _dep.Title!,
+            };
         }
 
         public static long GetUnixTimeStamp(DateTime _dateTime)
@@ -99,21 +109,22 @@ namespace souschef.server.Helpers
             return kitchenware;
         }
 
-        public static Dependency[] ConvertProtoDependencyListtoDependencyArray(Google.Protobuf.Collections.RepeatedField<Services.SubtaskGeneration.Dependency> dependencies)
+        public static List<Dependency> ConvertProtoDependencyListtoDependencyArray(Google.Protobuf.Collections.RepeatedField<Services.SubtaskGeneration.Dependency> dependencies)
         {
             List<Dependency> deps = new();
             foreach (var dep in dependencies)
             {
-                Dependency newDep = new()
+                Dependency newDependency = new()
                 {
+                    ID = new Guid(),
                     Title = dep.Name,
-                    ID = new Guid(dep.UUID.ToByteArray()),
+                    DependencyID = new Guid(dep.UUID.ToByteArray()),
                 };
 
-                deps.Add(newDep);
+                deps.Add(newDependency);
             }
 
-            return deps.ToArray();
+            return deps;
         }
 
         #endregion

@@ -6,7 +6,13 @@ using souschef.server.Data.Models;
 public class MealPlanRepository
 {
     private readonly PostGresDBContext _context;
-    public IEnumerable<MealPlan>? MealPlans => _context.MealPlans?.Include(m => m.Recipes).Include(m => m.ApplicationUser);
+    public IEnumerable<MealPlan>? MealPlans => _context.MealPlans?
+                                            .Include(m => m.Recipes).ThenInclude(r => r.Tasks).ThenInclude(r => r.Ingredients)
+                                            .Include(m => m.Recipes).ThenInclude(r => r.Tasks).ThenInclude(r => r.Kitchenware)
+                                            .Include(m => m.Recipes).ThenInclude(r => r.Tasks).ThenInclude(r => r.Dependencies)
+                                            .Include(m => m.Recipes).ThenInclude(r => r.Ingredients)
+                                            .Include(m => m.Recipes).ThenInclude(r => r.Kitchenware)
+                                            .Include(m => m.ApplicationUser);
 
     public MealPlanRepository(PostGresDBContext context) { _context = context; }
 
@@ -14,17 +20,18 @@ public class MealPlanRepository
     {
         try
         {
-            var mealPlan = new MealPlan { 
-                Name = name, 
-                Date = dateTime, 
-                ApplicationUser = user, 
+            var mealPlan = new MealPlan
+            {
+                Name = name,
+                Date = dateTime,
+                ApplicationUser = user,
             };
 
             _context.AddAsync(mealPlan);
             _context.SaveChanges();
 
             return true;
-        } 
+        }
         catch (Exception)
         {
             return false;
@@ -33,6 +40,7 @@ public class MealPlanRepository
 
     public IEnumerable<MealPlan> GetAll()
     {
+
         return MealPlans?.ToList() ?? new List<MealPlan>();
     }
 

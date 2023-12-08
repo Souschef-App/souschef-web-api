@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net.Sockets;
 using Grpc.Net.Client;
 using souschef.server.Data.DTOs;
 
@@ -22,6 +23,8 @@ namespace souschef.server.Services.SubtaskGeneration
         {
             using var channel = GrpcChannel.ForAddress("http://ai:50051");
             var client = new RecipeGeneration.RecipeGenerationClient(channel);
+
+            Console.WriteLine("requesting breakdown");
 
             var reply = await client.getRecipeBreakDownAsync(new RecipeBreakdownRequest { Description = recipeStep });
 
@@ -71,8 +74,11 @@ namespace souschef.server.Services.SubtaskGeneration
 
         public async Task<Data.Models.Task> RequestRegenerationOfSubTask(string prompt, TaskDTO dtoTask)
         {
+            Debug.WriteLine("RequestRegenerationOfSubTask");
             if (dtoTask.Ingredients == null || dtoTask.KitchenWare == null)
                 throw new Exception("Ingredients NULL");
+
+            Guid ID = dtoTask.Id != null ? (Guid)dtoTask.Id : throw new Exception("dtoTask.Id NULL");
 
             using var channel = GrpcChannel.ForAddress("http://ai:50051");
             var client = new RecipeGeneration.RecipeGenerationClient(channel);
@@ -106,7 +112,6 @@ namespace souschef.server.Services.SubtaskGeneration
 
             foreach (var kitchenware in dtoTask.KitchenWare)
             {
-
                 Kitchenware ware = new()
                 {
                     Name = kitchenware.Name,
@@ -122,7 +127,7 @@ namespace souschef.server.Services.SubtaskGeneration
 
             var returnTask = new Data.Models.Task
             {
-                Id = new Guid(reply.Task.Uuid.ToByteArray()),
+                Id = ID,
                 Title = reply.Task.Title,
                 Description = reply.Task.Description,
                 Duration = reply.Task.Duration,
