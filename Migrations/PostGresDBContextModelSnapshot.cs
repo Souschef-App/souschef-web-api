@@ -306,7 +306,7 @@ namespace souschef.server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Fraction");
+                    b.ToTable("Quantities");
                 });
 
             modelBuilder.Entity("souschef.server.Data.Models.Ingredient", b =>

@@ -12,8 +12,8 @@ using souschef.server.Data;
 namespace souschef.server.Migrations
 {
     [DbContext(typeof(PostGresDBContext))]
-    [Migration("20231207212725_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20231207224944_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -308,7 +308,7 @@ namespace souschef.server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Fraction");
+                    b.ToTable("Quantities");
                 });
 
             modelBuilder.Entity("souschef.server.Data.Models.Ingredient", b =>

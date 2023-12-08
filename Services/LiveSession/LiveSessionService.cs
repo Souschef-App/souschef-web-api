@@ -7,7 +7,7 @@ namespace souschef.server.Services.LiveSession
     {
         readonly string imageName = "souschef-live-session";
         readonly string containerName = "souschef-live-session";
-        readonly string staticLocalIP = "192.168.0.244:8080";
+        readonly string staticLocalIP = "192.168.2.16:8080";
 
         private async Task<bool> ImageExist(IDockerClient client, string imageName)
         {
@@ -16,7 +16,7 @@ namespace souschef.server.Services.LiveSession
                 await client.Images.InspectImageAsync(imageName);
                 return true;
             }
-            catch (Docker.DotNet.DockerApiException)
+            catch (DockerApiException)
             {
                 return false;
             }

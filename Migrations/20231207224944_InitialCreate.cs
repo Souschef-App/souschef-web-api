@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace souschef.server.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,20 +51,6 @@ namespace souschef.server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Fraction",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Whole = table.Column<int>(type: "integer", nullable: false),
-                    Numerator = table.Column<int>(type: "integer", nullable: false),
-                    Denominator = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Fraction", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "LiveSessions",
                 columns: table => new
                 {
@@ -75,6 +61,20 @@ namespace souschef.server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LiveSessions", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quantities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Whole = table.Column<int>(type: "integer", nullable: false),
+                    Numerator = table.Column<int>(type: "integer", nullable: false),
+                    Denominator = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quantities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -311,9 +311,9 @@ namespace souschef.server.Migrations
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ingredients_Fraction_QuantityId",
+                        name: "FK_Ingredients_Quantities_QuantityId",
                         column: x => x.QuantityId,
-                        principalTable: "Fraction",
+                        principalTable: "Quantities",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Ingredients_Recipes_RecipeId",
@@ -486,7 +486,7 @@ namespace souschef.server.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Fraction");
+                name: "Quantities");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
