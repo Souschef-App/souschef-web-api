@@ -14,7 +14,8 @@ namespace souschef.server.Data.Repository
                .Include(c => c.Ingredients)
                .Include(c => c.Kitchenware)
                .Include(c => c.Tasks).ThenInclude(x => x.Ingredients)
-               .Include(c => c.Tasks).ThenInclude(x => x.Kitchenware);
+               .Include(c => c.Tasks).ThenInclude(x => x.Kitchenware)
+               .Include(c => c.Tasks).ThenInclude(x => x.Dependencies);
 
         public void AddRecipe(Recipe _recipe)
         {

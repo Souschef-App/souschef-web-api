@@ -95,7 +95,7 @@ namespace souschef.server.Controllers
         }
 
         [HttpGet("get-my-recipes")]
-        public ActionResult<IEnumerable<Recipe>> GetMyRecipes([FromQuery]string _ownerId)
+        public ActionResult<IEnumerable<Recipe>> GetMyRecipes([FromQuery] string _ownerId)
         {
             if (!Guid.TryParse(_ownerId, out Guid res))
             {

@@ -24,6 +24,8 @@ namespace souschef.server.Services.SubtaskGeneration
             using var channel = GrpcChannel.ForAddress("http://ai:50051");
             var client = new RecipeGeneration.RecipeGenerationClient(channel);
 
+            Console.WriteLine("requesting breakdown");
+
             var reply = await client.getRecipeBreakDownAsync(new RecipeBreakdownRequest { Description = recipeStep });
 
             Console.WriteLine("reply " + reply.Tasks.Count);

@@ -27,7 +27,7 @@ namespace souschef.server.Data.DTOs
         public float Duration { get; set; }
         public int Difficulty { get; set; }
         // public int Order { get; set; }
-        public Dependency[]? Dependencies { get; set; }
+        public DependencyDTO[]? Dependencies { get; set; }
 
         public bool IsBackground { get; set; }
         // public string? VideoURL { get; set; }
