@@ -45,7 +45,7 @@ public class LiveSessionController : Controller
         if (ipAddress != null)
         {
             string webSocketURL = $"ws://{ipAddress}/ws";
-            
+
             // Default mealplan
             var mealplans = m_mealPlanRepository.GetAll().ToList();
             if (mealplans.Count == 0)
@@ -54,7 +54,8 @@ public class LiveSessionController : Controller
             }
 
             MealPlan defaultMealplan = mealplans[0];
-            MealPlanDTO mealPlan = new MealPlanDTO { 
+            MealPlanDTO mealPlan = new MealPlanDTO
+            {
                 Id = defaultMealplan.Id.ToString(),
                 Name = defaultMealplan.Name,
                 Date = defaultMealplan.Date.Ticks,
@@ -83,7 +84,7 @@ public class LiveSessionController : Controller
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Error: {ex}");
                 }
                 finally
                 {
@@ -93,7 +94,7 @@ public class LiveSessionController : Controller
                     }
                 }
             }
-            
+
 
             var session = m_liveSessionRepository.CreateSession(ipAddress);
 
